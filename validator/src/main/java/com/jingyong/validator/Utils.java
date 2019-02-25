@@ -7,6 +7,7 @@ import com.jingyong.validator.format.Check;
 import com.jingyong.validator.format.CheckField;
 import com.jingyong.validator.format.EmailField;
 import com.jingyong.validator.format.MobileField;
+import com.jingyong.validator.format.PatternField;
 import com.jingyong.validator.format.SizeParameter;
 
 import java.lang.annotation.Annotation;
@@ -24,7 +25,9 @@ public class Utils {
     }
 
     public static boolean isValidatorField(Annotation annotation) {
-        return annotation instanceof MobileField || annotation instanceof EmailField;
+        return annotation instanceof MobileField
+                || annotation instanceof EmailField
+                || annotation instanceof PatternField;
     }
 
     public static boolean isCheckMethod(Annotation annotation) {
@@ -45,6 +48,11 @@ public class Utils {
 
     public static EmailField getEmailField(Field field) {
         return field.getAnnotation(EmailField.class);
+    }
+
+
+    public static PatternField getPatternField(Field field) {
+        return field.getAnnotation(PatternField.class);
     }
 
 

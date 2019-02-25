@@ -18,5 +18,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Retention(RUNTIME)
 public @interface PatternField {
 
+    String value();
+
     String warning() default "";
 }

@@ -10,6 +10,8 @@ public interface IRuleProvider {
 
     boolean isEmail(String s);
 
+    boolean isPattern(String s, String regex);
+
     boolean sizeIn(int min, int max, String s);
 
     boolean sizeIn(int min, int max, Integer integer);

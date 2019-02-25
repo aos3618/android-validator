@@ -4,6 +4,7 @@ import com.jingyong.validator.checker.CheckerFactory;
 import com.jingyong.validator.format.CheckField;
 import com.jingyong.validator.format.EmailField;
 import com.jingyong.validator.format.MobileField;
+import com.jingyong.validator.format.PatternField;
 import com.jingyong.validator.rule.DefaultRule;
 import com.jingyong.validator.rule.IRuleProvider;
 
@@ -90,12 +91,17 @@ public class Validator {
                     Field field = classContent.getFields().get(value);
                     MobileField mobileField;
                     EmailField emailField;
+                    PatternField patternField;
                     if ((mobileField = Utils.getMobileField(field)) != null) {
                         if (!CheckerFactory.getMobileFieldChecker(field, mobileField, object, rule).check()) {
 //                            return false;// Return false will block all next steps;
                         }
                     } else if ((emailField = Utils.getEmailField(field)) != null) {
                         if (!CheckerFactory.getEmailFieldChecker(field, emailField, object, rule).check()) {
+//                            return false;// Return false will block all next steps;
+                        }
+                    } else if ((patternField = Utils.getPatternField(field)) != null) {
+                        if (!CheckerFactory.getPatternFieldCheck(field, patternField, object, rule).check()) {
 //                            return false;// Return false will block all next steps;
                         }
                     }

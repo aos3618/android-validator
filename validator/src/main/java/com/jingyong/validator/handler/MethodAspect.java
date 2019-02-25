@@ -16,10 +16,7 @@ import org.aspectj.lang.reflect.MethodSignature;
 @Aspect
 public class MethodAspect {
 
-    private static final String MAIN = "execution(* com.jingyong.retrofit.MainActivity.*(..))";
-    private static final String VALIDATOR = "execution(* com.jingyong.validator.Validator.*(..))";
     private static final String CHECK = "execution(@com.jingyong.validator.format.Check * *(..))";
-    private static final String NEW_CHECK = "@annotation(com.jingyong.validator.format.Check)";
 
     private static final String CHECK_ANN = CHECK;
 

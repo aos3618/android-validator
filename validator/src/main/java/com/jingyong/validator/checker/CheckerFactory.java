@@ -3,6 +3,7 @@ package com.jingyong.validator.checker;
 import com.jingyong.validator.Utils;
 import com.jingyong.validator.format.EmailField;
 import com.jingyong.validator.format.MobileField;
+import com.jingyong.validator.format.PatternField;
 import com.jingyong.validator.rule.IRuleProvider;
 
 import java.lang.reflect.Field;
@@ -23,6 +24,10 @@ public class CheckerFactory {
         return new EmailFieldChecker(field, emailField, object, rule);
     }
 
+    public static IChecker getPatternFieldCheck(Field field, PatternField patternField, Object object, IRuleProvider rule) {
+        return new PatternFieldChecker(field, patternField, object, rule);
+    }
+
     static class MobileFieldChecker implements IChecker {
 
         private Field field;
@@ -39,35 +44,13 @@ public class CheckerFactory {
 
         @Override
         public boolean check() {
-            if (field.getType().equals(String.class)) {
-                field.setAccessible(true);
-                try {
-                    if (!rule.isMobile(String.valueOf(field.get(object)))) {
-                        Utils.Log(field.getName() + mobileField.warning());
-                        return false;
-                    } else {
-                        Utils.Log(field.getName() + " is a Mobile format");
-                    }
-                } catch (IllegalAccessException e) {
-                    e.printStackTrace();
-                }
+            if (!rule.isMobile(getValue(field, object))) {
+                Utils.Log(field.getName() + mobileField.warning());
+                return false;
             } else {
-                try {
-                    Method getText = field.getType().getDeclaredMethod("getText");
-                    Field superField = object.getClass().getDeclaredField(field.getName());
-                    superField.setAccessible(true);
-                    Object realField = superField.get(object);
-                    getText.setAccessible(true);
-                    if (!rule.isMobile(String.valueOf(getText.invoke(realField)))) {
-                        Utils.Log(field.getName() + mobileField.warning());
-                    } else {
-                        Utils.Log(field.getName() + " is a Mobile format");
-                    }
-
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+                Utils.Log(field.getName() + " is a right pattern format");
             }
+
             return true;
         }
     }
@@ -88,36 +71,76 @@ public class CheckerFactory {
 
         @Override
         public boolean check() {
-            if (field.getType().equals(String.class)) {
-                field.setAccessible(true);
-                try {
-                    if (!rule.isEmail(String.valueOf(field.get(object)))) {
-                        Utils.Log(field.getName() + emailField.warning());
-                        return false;
-                    } else {
-                        Utils.Log(field.getName() + " is a Email format");
-                    }
-                } catch (IllegalAccessException e) {
-                    e.printStackTrace();
-                }
-            } else {
-                try {
-                    Method getText = field.getType().getDeclaredMethod("getText");
-                    Field superField = object.getClass().getDeclaredField(field.getName());
-                    superField.setAccessible(true);
-                    Object realField = superField.get(object);
-                    getText.setAccessible(true);
-                    if (!rule.isEmail(String.valueOf(getText.invoke(realField)))) {
-                        Utils.Log(field.getName() + emailField.warning());
-                    } else {
-                        Utils.Log(field.getName() + " is a Email format");
-                    }
 
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+            if (!rule.isEmail(getValue(field, object))) {
+                Utils.Log(field.getName() + emailField.warning());
+                return false;
+            } else {
+                Utils.Log(field.getName() + " is a right pattern format");
             }
+
             return true;
         }
+    }
+
+    static class PatternFieldChecker implements IChecker {
+
+        private Field field;
+        private PatternField patternField;
+        private Object object;
+        private IRuleProvider rule;
+
+        PatternFieldChecker(Field field, PatternField patternField, Object object, IRuleProvider rule) {
+            this.field = field;
+            this.patternField = patternField;
+            this.object = object;
+            this.rule = rule;
+        }
+
+        @Override
+        public boolean check() {
+
+            if (!rule.isPattern(getValue(field, object), patternField.value())) {
+                Utils.Log(field.getName() + patternField.warning());
+                return false;
+            } else {
+                Utils.Log(field.getName() + " is a right pattern format");
+            }
+
+            return true;
+        }
+    }
+
+    private static String getValue(Field field, Object object) {
+        if (field.getType().equals(String.class)) {
+            return getStringValue(field, object);
+        } else {
+            return getTextValue(field, object);
+        }
+    }
+
+    private static String getStringValue(Field field, Object object) {
+        field.setAccessible(true);
+        try {
+            return String.valueOf(field.get(object));
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    private static String getTextValue(Field field, Object object) {
+        Method getText;
+        try {
+            getText = field.getType().getDeclaredMethod("getText");
+            Field superField = object.getClass().getDeclaredField(field.getName());
+            superField.setAccessible(true);
+            Object realField = superField.get(object);
+            getText.setAccessible(true);
+            return String.valueOf(getText.invoke(realField));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 }

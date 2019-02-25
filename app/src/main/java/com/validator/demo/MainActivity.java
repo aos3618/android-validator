@@ -10,6 +10,7 @@ import com.jingyong.validator.format.Check;
 import com.jingyong.validator.format.CheckField;
 import com.jingyong.validator.format.EmailField;
 import com.jingyong.validator.format.MobileField;
+import com.jingyong.validator.format.PatternField;
 import com.jingyong.validator.format.SizeParameter;
 
 public class MainActivity extends AppCompatActivity {
@@ -26,6 +27,9 @@ public class MainActivity extends AppCompatActivity {
     @EmailField(warning = "邮箱格式不正确2")
     TextView mEmailText;
 
+    @PatternField(value = "^[0-9]*$" , warning = "正则格式不正确")
+    String mPattern;
+
     @Override
     protected void onCreate(@Size Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -38,11 +42,12 @@ public class MainActivity extends AppCompatActivity {
         mTV.setText("13652020143");
 
         mEmail = "@";
+        mPattern = "12a3";
         test("1", "2");
     }
 
     @Check
-    @CheckField({"mTV", "mText", "mEmail", "mEmailText"})
+    @CheckField({"mTV", "mText", "mEmail", "mEmailText", "mPattern"})
     public void test(@SizeParameter(min = 1, max = 2) String s,
                      @SizeParameter(min = 1, max = 2) String s2) {
 
