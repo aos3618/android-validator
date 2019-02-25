@@ -1,16 +1,18 @@
 package com.jingyong.validator;
 
 import android.app.Application;
+import android.content.Context;
+import android.content.res.Resources;
 
 import com.jingyong.validator.checker.CheckerFactory;
-import com.jingyong.validator.format.CheckField;
-import com.jingyong.validator.format.EmailField;
-import com.jingyong.validator.format.MobileField;
-import com.jingyong.validator.format.PatternField;
-import com.jingyong.validator.format.PatternParameter;
-import com.jingyong.validator.format.SizeParameter;
-import com.jingyong.validator.rule.DefaultRule;
+import com.jingyong.validator.format.field.CheckField;
+import com.jingyong.validator.format.field.EmailField;
+import com.jingyong.validator.format.field.MobileField;
+import com.jingyong.validator.format.field.PatternField;
+import com.jingyong.validator.format.parameter.PatternParameter;
+import com.jingyong.validator.format.parameter.SizeParameter;
 import com.jingyong.validator.rule.IRuleProvider;
+import com.jingyong.validator.rule.IWarningProvider;
 
 import org.aspectj.lang.reflect.MethodSignature;
 
@@ -26,13 +28,13 @@ public class Validator {
 
     private static HashMap<Class, ClassContent> sCheckCache = new HashMap<>();
 
-    private static IRuleProvider rule;
-    private static Application application;
+    private static PrividerContent prividerContent;
 
     Validator(ValidatorBuilder builder) {
-        application = builder.getApplication();
-        rule = builder.getRuleProvider();
-
+        prividerContent = new PrividerContent();
+        prividerContent.setRuleProvider(builder.getRuleProvider());
+        prividerContent.setWarningProvider(builder.getWarningProvider());
+        prividerContent.setResources(builder.getResources());
     }
 
     public static void inject(Object object) {
@@ -114,16 +116,16 @@ public class Validator {
                     EmailField emailField;
                     PatternField patternField;
                     if ((mobileField = Utils.getMobileField(field)) != null) {
-                        if (!CheckerFactory.getMobileFieldChecker(field, mobileField, object, rule).check()) {
-//                            return false;// Return false will block all next steps;
+                        if (!CheckerFactory.getMobileFieldChecker(field, mobileField, object, prividerContent).check()) {
+                            return false;// Return false will block all next steps;
                         }
                     } else if ((emailField = Utils.getEmailField(field)) != null) {
-                        if (!CheckerFactory.getEmailFieldChecker(field, emailField, object, rule).check()) {
-//                            return false;// Return false will block all next steps;
+                        if (!CheckerFactory.getEmailFieldChecker(field, emailField, object, prividerContent).check()) {
+                            return false;// Return false will block all next steps;
                         }
                     } else if ((patternField = Utils.getPatternField(field)) != null) {
-                        if (!CheckerFactory.getPatternFieldChecker(field, patternField, object, rule).check()) {
-//                            return false;// Return false will block all next steps;
+                        if (!CheckerFactory.getPatternFieldChecker(field, patternField, object, prividerContent).check()) {
+                            return false;// Return false will block all next steps;
                         }
                     }
                 }
@@ -145,7 +147,9 @@ public class Validator {
         Annotation[][] annotations = method.getParameterAnnotations();
         Class[] argsTypes = methodSignature.getParameterTypes();
         for (int i = 0; i < argsCount; ++i) {
-            checkParameterAnnotation(method, argsTypes[i], argNames[i], argValues[i], annotations[i]);
+            if (!checkParameterAnnotation(method, argsTypes[i], argNames[i], argValues[i], annotations[i])) {
+                return false;
+            }
         }
 
         return true;
@@ -166,13 +170,13 @@ public class Validator {
 
                 if ((Utils.isSizeParameter(annotation))) {
                     SizeParameter sizeParameter = (SizeParameter) annotation;
-                    if (!CheckerFactory.getSizeParameterChecker(type, name, object, sizeParameter, rule).check()) {
-
+                    if (!CheckerFactory.getSizeParameterChecker(type, name, object, sizeParameter, prividerContent).check()) {
+                        return false;// Return false will block all next steps;
                     }
                 } else if (Utils.isPatternParameter(annotation)) {
                     PatternParameter patternParameter = (PatternParameter) annotation;
-                    if (!CheckerFactory.getPatternParameterChecker(type, name, object, patternParameter, rule).check()) {
-
+                    if (!CheckerFactory.getPatternParameterChecker(type, name, object, patternParameter, prividerContent).check()) {
+                        return false;// Return false will block all next steps;
                     }
                 }
             }

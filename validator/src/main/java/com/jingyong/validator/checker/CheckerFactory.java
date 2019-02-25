@@ -1,17 +1,17 @@
 package com.jingyong.validator.checker;
 
-import android.net.Uri;
-
-import com.jingyong.validator.Utils;
-import com.jingyong.validator.format.EmailField;
-import com.jingyong.validator.format.MobileField;
-import com.jingyong.validator.format.PatternField;
-import com.jingyong.validator.format.PatternParameter;
-import com.jingyong.validator.format.SizeParameter;
+import com.jingyong.validator.PrividerContent;
+import com.jingyong.validator.format.field.EmailField;
+import com.jingyong.validator.format.field.MobileField;
+import com.jingyong.validator.format.field.PatternField;
+import com.jingyong.validator.format.parameter.PatternParameter;
+import com.jingyong.validator.format.parameter.SizeParameter;
 import com.jingyong.validator.rule.IRuleProvider;
+import com.jingyong.validator.rule.IWarningProvider;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.Collection;
 
 /**
  * Created by AoS on 2019/2/22 0022.
@@ -20,24 +20,24 @@ import java.lang.reflect.Method;
 public class CheckerFactory {
 
 
-    public static IChecker getMobileFieldChecker(Field field, MobileField mobileField, Object object, IRuleProvider rule) {
-        return new MobileFieldChecker(field, mobileField, object, rule);
+    public static IChecker getMobileFieldChecker(Field field, MobileField mobileField, Object object, PrividerContent prividerContent) {
+        return new MobileFieldChecker(field, mobileField, object, prividerContent);
     }
 
-    public static IChecker getEmailFieldChecker(Field field, EmailField emailField, Object object, IRuleProvider rule) {
-        return new EmailFieldChecker(field, emailField, object, rule);
+    public static IChecker getEmailFieldChecker(Field field, EmailField emailField, Object object, PrividerContent prividerContent) {
+        return new EmailFieldChecker(field, emailField, object, prividerContent);
     }
 
-    public static IChecker getPatternFieldChecker(Field field, PatternField patternField, Object object, IRuleProvider rule) {
-        return new PatternFieldChecker(field, patternField, object, rule);
+    public static IChecker getPatternFieldChecker(Field field, PatternField patternField, Object object, PrividerContent prividerContent) {
+        return new PatternFieldChecker(field, patternField, object, prividerContent);
     }
 
-    public static IChecker getSizeParameterChecker(Class type, String name, Object value, SizeParameter sizeParameter, IRuleProvider rule) {
-        return new SizeParameterChecker(type, name, value, sizeParameter, rule);
+    public static IChecker getSizeParameterChecker(Class type, String name, Object value, SizeParameter sizeParameter, PrividerContent prividerContent) {
+        return new SizeParameterChecker(type, name, value, sizeParameter, prividerContent);
     }
 
-    public static IChecker getPatternParameterChecker(Class type, String name, Object value, PatternParameter patternParameter, IRuleProvider rule) {
-        return new PatternParameterChecker(type, name, value, patternParameter, rule);
+    public static IChecker getPatternParameterChecker(Class type, String name, Object value, PatternParameter patternParameter, PrividerContent prividerContent) {
+        return new PatternParameterChecker(type, name, value, patternParameter, prividerContent);
     }
 
     static class MobileFieldChecker implements IChecker {
@@ -45,22 +45,22 @@ public class CheckerFactory {
         private Field field;
         private MobileField mobileField;
         private Object object;
-        private IRuleProvider rule;
+        private PrividerContent prividerContent;
 
-        MobileFieldChecker(Field field, MobileField mobileField, Object object, IRuleProvider rule) {
+        MobileFieldChecker(Field field, MobileField mobileField, Object object, PrividerContent prividerContent) {
             this.field = field;
             this.mobileField = mobileField;
             this.object = object;
-            this.rule = rule;
+            this.prividerContent = prividerContent;
         }
 
         @Override
         public boolean check() {
+            IRuleProvider rule = prividerContent.getRuleProvider();
+            IWarningProvider warningProvider = prividerContent.getWarningProvider();
             if (!rule.isMobile(getValue(field, object))) {
-                Utils.Log(field.getName() + mobileField.warning());
+                warningProvider.show(mobileField.warning());
                 return false;
-            } else {
-                Utils.Log(field.getName() + " is a right isMobile format");
             }
 
             return true;
@@ -72,25 +72,23 @@ public class CheckerFactory {
         private Field field;
         private EmailField emailField;
         private Object object;
-        private IRuleProvider rule;
+        private PrividerContent prividerContent;
 
-        EmailFieldChecker(Field field, EmailField emailField, Object object, IRuleProvider rule) {
+        EmailFieldChecker(Field field, EmailField emailField, Object object, PrividerContent prividerContent) {
             this.field = field;
             this.emailField = emailField;
             this.object = object;
-            this.rule = rule;
+            this.prividerContent = prividerContent;
         }
 
         @Override
         public boolean check() {
-
+            IRuleProvider rule = prividerContent.getRuleProvider();
+            IWarningProvider warningProvider = prividerContent.getWarningProvider();
             if (!rule.isEmail(getValue(field, object))) {
-                Utils.Log(field.getName() + emailField.warning());
+                warningProvider.show(emailField.warning());
                 return false;
-            } else {
-                Utils.Log(field.getName() + " is a right Email format");
             }
-
             return true;
         }
     }
@@ -100,23 +98,22 @@ public class CheckerFactory {
         private Field field;
         private PatternField patternField;
         private Object object;
-        private IRuleProvider rule;
+        private PrividerContent prividerContent;
 
-        PatternFieldChecker(Field field, PatternField patternField, Object object, IRuleProvider rule) {
+        PatternFieldChecker(Field field, PatternField patternField, Object object, PrividerContent prividerContent) {
             this.field = field;
             this.patternField = patternField;
             this.object = object;
-            this.rule = rule;
+            this.prividerContent = prividerContent;
         }
 
         @Override
         public boolean check() {
-
+            IRuleProvider rule = prividerContent.getRuleProvider();
+            IWarningProvider warningProvider = prividerContent.getWarningProvider();
             if (!rule.isPattern(getValue(field, object), patternField.value())) {
-                Utils.Log(field.getName() + patternField.warning());
+                warningProvider.show(patternField.warning());
                 return false;
-            } else {
-                Utils.Log(field.getName() + " is a right pattern format");
             }
 
             return true;
@@ -129,27 +126,34 @@ public class CheckerFactory {
         private String name;
         private Object value;
         private SizeParameter sizeParameter;
-        private IRuleProvider rule;
+        private PrividerContent prividerContent;
 
-        SizeParameterChecker(Class type, String name, Object value, SizeParameter sizeParameter, IRuleProvider rule) {
+        SizeParameterChecker(Class type, String name, Object value, SizeParameter sizeParameter, PrividerContent prividerContent) {
             this.type = type;
             this.name = name;
             this.value = value;
             this.sizeParameter = sizeParameter;
-            this.rule = rule;
+            this.prividerContent = prividerContent;
         }
 
         @Override
         public boolean check() {
+            IRuleProvider rule = prividerContent.getRuleProvider();
+            IWarningProvider warningProvider = prividerContent.getWarningProvider();
             if (value instanceof String) {
                 if (!rule.sizeIn(sizeParameter.min(), sizeParameter.max(), String.valueOf(value))) {
-                    Utils.Log(name + " size is not in " + sizeParameter.min() + " - " + sizeParameter.max());
+                    warningProvider.show(sizeParameter.warning());
                     return false;
                 }
 
+            } else if (value instanceof Collection) {
+                if (!rule.sizeIn(sizeParameter.min(), sizeParameter.max(), getCollectionSize(value))) {
+                    warningProvider.show(sizeParameter.warning());
+                    return false;
+                }
             } else {
                 if (!rule.sizeIn(sizeParameter.min(), sizeParameter.max(), getTextValue(value))) {
-                    Utils.Log(name + " size is not in " + sizeParameter.min() + " - " + sizeParameter.max());
+                    warningProvider.show(sizeParameter.warning());
                     return false;
                 }
             }
@@ -163,32 +167,35 @@ public class CheckerFactory {
         private String name;
         private Object value;
         private PatternParameter patternParameter;
-        private IRuleProvider rule;
+        private PrividerContent prividerContent;
 
-        PatternParameterChecker(Class type, String name, Object value, PatternParameter patternParameter, IRuleProvider rule) {
+        PatternParameterChecker(Class type, String name, Object value, PatternParameter patternParameter, PrividerContent prividerContent) {
             this.type = type;
             this.name = name;
             this.value = value;
             this.patternParameter = patternParameter;
-            this.rule = rule;
+            this.prividerContent = prividerContent;
         }
 
         @Override
         public boolean check() {
+            IRuleProvider rule = prividerContent.getRuleProvider();
+            IWarningProvider warningProvider = prividerContent.getWarningProvider();
             if (value instanceof String) {
                 if (!rule.isPattern(String.valueOf(value), patternParameter.value())) {
-                    Utils.Log(name + " is not a pattern of " + patternParameter.value());
+                    warningProvider.show(patternParameter.warning());
                     return false;
                 }
 
             } else {
                 if (!rule.isPattern(getTextValue(value), patternParameter.value())) {
-                    Utils.Log(name + " is not a pattern of " + patternParameter.value());
+                    warningProvider.show(patternParameter.warning());
                     return false;
                 }
             }
             return true;
         }
+
     }
 
     private static String getValue(Field field, Object object) {
@@ -234,5 +241,17 @@ public class CheckerFactory {
             e.printStackTrace();
         }
         return null;
+    }
+
+    private static int getCollectionSize(Object value) {
+        Method size;
+        try {
+            size = value.getClass().getDeclaredMethod("size");
+            size.setAccessible(true);
+            return (int) size.invoke(value);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return -1;
     }
 }
