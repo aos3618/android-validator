@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.widget.TextView;
 
 import com.jingyong.validator.Validator;
+import com.jingyong.validator.ValidatorBuilder;
 import com.jingyong.validator.format.Check;
 import com.jingyong.validator.format.CheckField;
 import com.jingyong.validator.format.EmailField;
@@ -35,6 +36,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(@Size Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        new ValidatorBuilder().build();
 
         Validator.inject(this);
 

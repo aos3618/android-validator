@@ -1,5 +1,7 @@
 package com.jingyong.validator;
 
+import android.app.Application;
+
 import com.jingyong.validator.checker.CheckerFactory;
 import com.jingyong.validator.format.CheckField;
 import com.jingyong.validator.format.EmailField;
@@ -24,9 +26,12 @@ public class Validator {
 
     private static HashMap<Class, ClassContent> sCheckCache = new HashMap<>();
 
-    private static IRuleProvider rule = new DefaultRule();
+    private static IRuleProvider rule;
+    private static Application application;
 
-    private void init(IRuleProvider rule) {
+    Validator(ValidatorBuilder builder) {
+        application = builder.getApplication();
+        rule = builder.getRuleProvider();
 
     }
 
