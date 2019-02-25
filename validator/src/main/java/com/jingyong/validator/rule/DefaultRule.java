@@ -4,7 +4,7 @@ package com.jingyong.validator.rule;
  * Created by AoS on 2019/2/22 0022.
  */
 
-public class DefaultRule implements IValidatorRule {
+public class DefaultRule implements IRuleProvider {
     @Override
     public boolean isMobile(String s) {
         return s != null && s.length() == 11 && s.startsWith("1");

@@ -2,9 +2,10 @@ package com.jingyong.validator;
 
 import com.jingyong.validator.checker.CheckerFactory;
 import com.jingyong.validator.format.CheckField;
+import com.jingyong.validator.format.EmailField;
 import com.jingyong.validator.format.MobileField;
 import com.jingyong.validator.rule.DefaultRule;
-import com.jingyong.validator.rule.IValidatorRule;
+import com.jingyong.validator.rule.IRuleProvider;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
@@ -18,9 +19,9 @@ public class Validator {
 
     private static HashMap<Class, ClassContent> sCheckCache = new HashMap<>();
 
-    private static IValidatorRule rule = new DefaultRule();
+    private static IRuleProvider rule = new DefaultRule();
 
-    private void init(IValidatorRule rule) {
+    private void init(IRuleProvider rule) {
 
     }
 
@@ -88,9 +89,14 @@ public class Validator {
                 } else {
                     Field field = classContent.getFields().get(value);
                     MobileField mobileField;
+                    EmailField emailField;
                     if ((mobileField = Utils.getMobileField(field)) != null) {
                         if (!CheckerFactory.getMobileFieldChecker(field, mobileField, object, rule).check()) {
-                            return false;
+//                            return false;// Return false will block all next steps;
+                        }
+                    } else if ((emailField = Utils.getEmailField(field)) != null) {
+                        if (!CheckerFactory.getEmailFieldChecker(field, emailField, object, rule).check()) {
+//                            return false;// Return false will block all next steps;
                         }
                     }
                 }

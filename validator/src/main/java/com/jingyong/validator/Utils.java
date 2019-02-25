@@ -5,6 +5,7 @@ import android.util.Size;
 
 import com.jingyong.validator.format.Check;
 import com.jingyong.validator.format.CheckField;
+import com.jingyong.validator.format.EmailField;
 import com.jingyong.validator.format.MobileField;
 import com.jingyong.validator.format.SizeParameter;
 
@@ -23,7 +24,7 @@ public class Utils {
     }
 
     public static boolean isValidatorField(Annotation annotation) {
-        return annotation instanceof MobileField;
+        return annotation instanceof MobileField || annotation instanceof EmailField;
     }
 
     public static boolean isCheckMethod(Annotation annotation) {
@@ -41,6 +42,11 @@ public class Utils {
     public static MobileField getMobileField(Field field) {
         return field.getAnnotation(MobileField.class);
     }
+
+    public static EmailField getEmailField(Field field) {
+        return field.getAnnotation(EmailField.class);
+    }
+
 
     public static boolean isSizeParameter(Field field) {
         return field.getAnnotation(SizeParameter.class) != null;

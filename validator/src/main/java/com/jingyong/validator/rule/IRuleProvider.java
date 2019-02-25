@@ -4,7 +4,7 @@ package com.jingyong.validator.rule;
  * Created by AoS on 2019/2/22 0022.
  */
 
-public interface IValidatorRule {
+public interface IRuleProvider {
 
     boolean isMobile(String s);
 
