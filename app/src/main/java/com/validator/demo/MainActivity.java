@@ -11,6 +11,7 @@ import com.jingyong.validator.format.CheckField;
 import com.jingyong.validator.format.EmailField;
 import com.jingyong.validator.format.MobileField;
 import com.jingyong.validator.format.PatternField;
+import com.jingyong.validator.format.PatternParameter;
 import com.jingyong.validator.format.SizeParameter;
 
 public class MainActivity extends AppCompatActivity {
@@ -49,6 +50,7 @@ public class MainActivity extends AppCompatActivity {
     @Check
     @CheckField({"mTV", "mText", "mEmail", "mEmailText", "mPattern"})
     public void test(@SizeParameter(min = 1, max = 2) String s,
+                     @PatternParameter("^[0-9]*$")
                      @SizeParameter(min = 1, max = 2) TextView mEmail) {
 
     }

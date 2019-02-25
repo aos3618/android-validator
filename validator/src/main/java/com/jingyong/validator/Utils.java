@@ -8,6 +8,7 @@ import com.jingyong.validator.format.CheckField;
 import com.jingyong.validator.format.EmailField;
 import com.jingyong.validator.format.MobileField;
 import com.jingyong.validator.format.PatternField;
+import com.jingyong.validator.format.PatternParameter;
 import com.jingyong.validator.format.SizeParameter;
 
 import java.lang.annotation.Annotation;
@@ -35,7 +36,8 @@ public class Utils {
     }
 
     public static boolean isValidatorParameter(Annotation annotation) {
-        return annotation instanceof SizeParameter;
+        return annotation instanceof SizeParameter
+                || annotation instanceof PatternParameter;
     }
 
     public static boolean isCheckField(Annotation annotation) {
@@ -58,5 +60,9 @@ public class Utils {
 
     public static boolean isSizeParameter(Annotation annotation) {
         return annotation instanceof SizeParameter;
+    }
+
+    public static boolean isPatternParameter(Annotation annotation) {
+        return annotation instanceof PatternParameter;
     }
 }

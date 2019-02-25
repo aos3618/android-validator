@@ -6,6 +6,7 @@ import com.jingyong.validator.Utils;
 import com.jingyong.validator.format.EmailField;
 import com.jingyong.validator.format.MobileField;
 import com.jingyong.validator.format.PatternField;
+import com.jingyong.validator.format.PatternParameter;
 import com.jingyong.validator.format.SizeParameter;
 import com.jingyong.validator.rule.IRuleProvider;
 
@@ -33,6 +34,10 @@ public class CheckerFactory {
 
     public static IChecker getSizeParameterChecker(Class type, String name, Object value, SizeParameter sizeParameter, IRuleProvider rule) {
         return new SizeParameterChecker(type, name, value, sizeParameter, rule);
+    }
+
+    public static IChecker getPatternParameterChecker(Class type, String name, Object value, PatternParameter patternParameter, IRuleProvider rule) {
+        return new PatternParameterChecker(type, name, value, patternParameter, rule);
     }
 
     static class MobileFieldChecker implements IChecker {
@@ -136,18 +141,49 @@ public class CheckerFactory {
 
         @Override
         public boolean check() {
-
             if (value instanceof String) {
                 if (!rule.sizeIn(sizeParameter.min(), sizeParameter.max(), String.valueOf(value))) {
                     Utils.Log(name + " size is not in " + sizeParameter.min() + " - " + sizeParameter.max());
                     return false;
                 }
 
-            } else if (value instanceof Integer) {
-
-            } else  {
+            } else {
                 if (!rule.sizeIn(sizeParameter.min(), sizeParameter.max(), getTextValue(value))) {
                     Utils.Log(name + " size is not in " + sizeParameter.min() + " - " + sizeParameter.max());
+                    return false;
+                }
+            }
+            return true;
+        }
+    }
+
+    static class PatternParameterChecker implements IChecker {
+
+        private Class type;
+        private String name;
+        private Object value;
+        private PatternParameter patternParameter;
+        private IRuleProvider rule;
+
+        PatternParameterChecker(Class type, String name, Object value, PatternParameter patternParameter, IRuleProvider rule) {
+            this.type = type;
+            this.name = name;
+            this.value = value;
+            this.patternParameter = patternParameter;
+            this.rule = rule;
+        }
+
+        @Override
+        public boolean check() {
+            if (value instanceof String) {
+                if (!rule.isPattern(String.valueOf(value), patternParameter.value())) {
+                    Utils.Log(name + " is not a pattern of " + patternParameter.value());
+                    return false;
+                }
+
+            } else {
+                if (!rule.isPattern(getTextValue(value), patternParameter.value())) {
+                    Utils.Log(name + " is not a pattern of " + patternParameter.value());
                     return false;
                 }
             }

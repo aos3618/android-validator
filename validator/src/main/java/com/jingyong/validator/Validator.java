@@ -5,6 +5,7 @@ import com.jingyong.validator.format.CheckField;
 import com.jingyong.validator.format.EmailField;
 import com.jingyong.validator.format.MobileField;
 import com.jingyong.validator.format.PatternField;
+import com.jingyong.validator.format.PatternParameter;
 import com.jingyong.validator.format.SizeParameter;
 import com.jingyong.validator.rule.DefaultRule;
 import com.jingyong.validator.rule.IRuleProvider;
@@ -161,6 +162,11 @@ public class Validator {
                 if ((Utils.isSizeParameter(annotation))) {
                     SizeParameter sizeParameter = (SizeParameter) annotation;
                     if (!CheckerFactory.getSizeParameterChecker(type, name, object, sizeParameter, rule).check()) {
+
+                    }
+                } else if (Utils.isPatternParameter(annotation)) {
+                    PatternParameter patternParameter = (PatternParameter) annotation;
+                    if (!CheckerFactory.getPatternParameterChecker(type, name, object, patternParameter, rule).check()) {
 
                     }
                 }
