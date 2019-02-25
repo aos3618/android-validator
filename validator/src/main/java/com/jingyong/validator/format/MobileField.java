@@ -17,4 +17,6 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 public @interface MobileField {
 
     String warning() default "";
+
+    int warningId() default 0;
 }

@@ -56,7 +56,7 @@ public class Utils {
     }
 
 
-    public static boolean isSizeParameter(Field field) {
-        return field.getAnnotation(SizeParameter.class) != null;
+    public static boolean isSizeParameter(Annotation annotation) {
+        return annotation instanceof SizeParameter;
     }
 }

@@ -1,9 +1,12 @@
 package com.jingyong.validator.checker;
 
+import android.net.Uri;
+
 import com.jingyong.validator.Utils;
 import com.jingyong.validator.format.EmailField;
 import com.jingyong.validator.format.MobileField;
 import com.jingyong.validator.format.PatternField;
+import com.jingyong.validator.format.SizeParameter;
 import com.jingyong.validator.rule.IRuleProvider;
 
 import java.lang.reflect.Field;
@@ -24,8 +27,12 @@ public class CheckerFactory {
         return new EmailFieldChecker(field, emailField, object, rule);
     }
 
-    public static IChecker getPatternFieldCheck(Field field, PatternField patternField, Object object, IRuleProvider rule) {
+    public static IChecker getPatternFieldChecker(Field field, PatternField patternField, Object object, IRuleProvider rule) {
         return new PatternFieldChecker(field, patternField, object, rule);
+    }
+
+    public static IChecker getSizeParameterChecker(Class type, String name, Object value, SizeParameter sizeParameter, IRuleProvider rule) {
+        return new SizeParameterChecker(type, name, value, sizeParameter, rule);
     }
 
     static class MobileFieldChecker implements IChecker {
@@ -48,7 +55,7 @@ public class CheckerFactory {
                 Utils.Log(field.getName() + mobileField.warning());
                 return false;
             } else {
-                Utils.Log(field.getName() + " is a right pattern format");
+                Utils.Log(field.getName() + " is a right isMobile format");
             }
 
             return true;
@@ -76,7 +83,7 @@ public class CheckerFactory {
                 Utils.Log(field.getName() + emailField.warning());
                 return false;
             } else {
-                Utils.Log(field.getName() + " is a right pattern format");
+                Utils.Log(field.getName() + " is a right Email format");
             }
 
             return true;
@@ -111,6 +118,43 @@ public class CheckerFactory {
         }
     }
 
+    static class SizeParameterChecker implements IChecker {
+
+        private Class type;
+        private String name;
+        private Object value;
+        private SizeParameter sizeParameter;
+        private IRuleProvider rule;
+
+        SizeParameterChecker(Class type, String name, Object value, SizeParameter sizeParameter, IRuleProvider rule) {
+            this.type = type;
+            this.name = name;
+            this.value = value;
+            this.sizeParameter = sizeParameter;
+            this.rule = rule;
+        }
+
+        @Override
+        public boolean check() {
+
+            if (value instanceof String) {
+                if (!rule.sizeIn(sizeParameter.min(), sizeParameter.max(), String.valueOf(value))) {
+                    Utils.Log(name + " size is not in " + sizeParameter.min() + " - " + sizeParameter.max());
+                    return false;
+                }
+
+            } else if (value instanceof Integer) {
+
+            } else  {
+                if (!rule.sizeIn(sizeParameter.min(), sizeParameter.max(), getTextValue(value))) {
+                    Utils.Log(name + " size is not in " + sizeParameter.min() + " - " + sizeParameter.max());
+                    return false;
+                }
+            }
+            return true;
+        }
+    }
+
     private static String getValue(Field field, Object object) {
         if (field.getType().equals(String.class)) {
             return getStringValue(field, object);
@@ -138,6 +182,18 @@ public class CheckerFactory {
             Object realField = superField.get(object);
             getText.setAccessible(true);
             return String.valueOf(getText.invoke(realField));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    private static String getTextValue(Object value) {
+        Method getText;
+        try {
+            getText = value.getClass().getDeclaredMethod("getText");
+            getText.setAccessible(true);
+            return String.valueOf(getText.invoke(value));
         } catch (Exception e) {
             e.printStackTrace();
         }

@@ -27,7 +27,7 @@ public class MainActivity extends AppCompatActivity {
     @EmailField(warning = "邮箱格式不正确2")
     TextView mEmailText;
 
-    @PatternField(value = "^[0-9]*$" , warning = "正则格式不正确")
+    @PatternField(value = "^[0-9]*$", warning = "正则格式不正确")
     String mPattern;
 
     @Override
@@ -43,13 +43,13 @@ public class MainActivity extends AppCompatActivity {
 
         mEmail = "@";
         mPattern = "12a3";
-        test("1", "2");
+        test("1231", mEmailText);
     }
 
     @Check
     @CheckField({"mTV", "mText", "mEmail", "mEmailText", "mPattern"})
     public void test(@SizeParameter(min = 1, max = 2) String s,
-                     @SizeParameter(min = 1, max = 2) String s2) {
+                     @SizeParameter(min = 1, max = 2) TextView mEmail) {
 
     }
 }

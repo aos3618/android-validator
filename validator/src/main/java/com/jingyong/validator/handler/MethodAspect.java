@@ -31,7 +31,7 @@ public class MethodAspect {
 
         if (joinPoint.getSignature() instanceof MethodSignature) {
             MethodSignature methodSignature = (MethodSignature) joinPoint.getSignature();
-            if (Validator.checkMethod(joinPoint.getTarget(), methodSignature.getMethod())) {
+            if (Validator.checkMethod(joinPoint.getTarget(), methodSignature, joinPoint.getArgs())) {
                 joinPoint.proceed();
             }
         } else {

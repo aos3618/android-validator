@@ -1,5 +1,9 @@
 package com.jingyong.validator.rule;
 
+import android.util.Log;
+
+import com.jingyong.validator.Utils;
+
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -25,7 +29,8 @@ public class DefaultRule implements IRuleProvider {
 
     @Override
     public boolean sizeIn(int min, int max, String s) {
-        return s.length() > min && s.length() < max;
+        Utils.Log(min + " - " + max + " : " + s);
+        return s.length() >= min && s.length() <= max;
     }
 
     @Override

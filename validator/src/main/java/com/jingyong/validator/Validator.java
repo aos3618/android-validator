@@ -5,8 +5,11 @@ import com.jingyong.validator.format.CheckField;
 import com.jingyong.validator.format.EmailField;
 import com.jingyong.validator.format.MobileField;
 import com.jingyong.validator.format.PatternField;
+import com.jingyong.validator.format.SizeParameter;
 import com.jingyong.validator.rule.DefaultRule;
 import com.jingyong.validator.rule.IRuleProvider;
+
+import org.aspectj.lang.reflect.MethodSignature;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
@@ -46,7 +49,6 @@ public class Validator {
                     break;
                 }
             }
-
         }
 
         Method[] methods = clz.getDeclaredMethods();
@@ -70,16 +72,29 @@ public class Validator {
 
     }
 
-    public static boolean checkMethod(Object object, Method method) {
+    public static boolean checkMethod(Object object, MethodSignature methodSignature, Object[] argsValues) {
+
+        Method method = methodSignature.getMethod();
+        CheckField annotation = method.getAnnotation(CheckField.class);
+
+        boolean checkResult = true;
+        if (annotation != null) {
+            checkResult = checkMethodAnnotation(object, method, annotation);
+        }
+
+        checkResult = checkResult && checkParameter(object, methodSignature, argsValues);
+
+        return checkResult;
+    }
+
+    private static boolean checkMethodAnnotation(Object object, Method method, Annotation annotations) {
         Class clz = object.getClass();
         Utils.Log("checkMethod:" + clz.getCanonicalName());
         if (sCheckCache.get(clz) == null) {
             Utils.Log("Inject the class First");
             return false;
         }
-
         ClassContent classContent = sCheckCache.get(clz);
-
         CheckField annotation = method.getAnnotation(CheckField.class);
         if (annotation != null) {
             String[] values = annotation.value();
@@ -101,9 +116,52 @@ public class Validator {
 //                            return false;// Return false will block all next steps;
                         }
                     } else if ((patternField = Utils.getPatternField(field)) != null) {
-                        if (!CheckerFactory.getPatternFieldCheck(field, patternField, object, rule).check()) {
+                        if (!CheckerFactory.getPatternFieldChecker(field, patternField, object, rule).check()) {
 //                            return false;// Return false will block all next steps;
                         }
+                    }
+                }
+            }
+        }
+
+        return true;
+    }
+
+    private static boolean checkParameter(Object object, MethodSignature methodSignature, Object[] argValues) {
+
+        String[] argNames = methodSignature.getParameterNames();
+        if (argNames == null || argNames.length <= 0) {
+            return true;
+        }
+
+        Method method = methodSignature.getMethod();
+        int argsCount = argNames.length;
+        Annotation[][] annotations = method.getParameterAnnotations();
+        Class[] argsTypes = methodSignature.getParameterTypes();
+        for (int i = 0; i < argsCount; ++i) {
+            checkParameterAnnotation(method, argsTypes[i], argNames[i], argValues[i], annotations[i]);
+        }
+
+        return true;
+    }
+
+    private static boolean checkParameterAnnotation(Method method, Class type, String name, Object object, Annotation[] annotations) {
+        if (annotations == null) {
+            return true;
+        }
+
+        boolean nullValue = object == null;
+
+        for (Annotation annotation : annotations) {
+            if (Utils.isValidatorParameter(annotation)) {
+                if (nullValue) {
+                    return false;
+                }
+
+                if ((Utils.isSizeParameter(annotation))) {
+                    SizeParameter sizeParameter = (SizeParameter) annotation;
+                    if (!CheckerFactory.getSizeParameterChecker(type, name, object, sizeParameter, rule).check()) {
+
                     }
                 }
             }
