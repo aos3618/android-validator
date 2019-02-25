@@ -49,16 +49,16 @@ public class CheckerFactory {
             } else {
                 try {
                     Method getText = field.getType().getDeclaredMethod("getText");
-                    Object realField = object.getClass().getField(field.getName()).get(object);
-                    if (getText != null) {
-                        getText.setAccessible(true);
-                        if (!rule.isMobile(String.valueOf(getText.invoke(realField)))) {
-                            Utils.Log(field.getName() + mobileField.warning());
-                        } else {
-                            Utils.Log(field.getName() + " is a Mobile format");
-                        }
-
+                    Field superField = object.getClass().getDeclaredField(field.getName());
+                    superField.setAccessible(true);
+                    Object realField = superField.get(object);
+                    getText.setAccessible(true);
+                    if (!rule.isMobile(String.valueOf(getText.invoke(realField)))) {
+                        Utils.Log(field.getName() + mobileField.warning());
+                    } else {
+                        Utils.Log(field.getName() + " is a Mobile format");
                     }
+
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
