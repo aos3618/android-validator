@@ -1,5 +1,6 @@
 # android-validator
 [GOING] Android Common Validator using AspectJ , Annotation , Reflect
+
 [进行中] 基于AspectJ,注解，反射开发的Android校验库
 
 
