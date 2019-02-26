@@ -5,18 +5,18 @@ import android.os.Bundle;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.jingyong.validator.Validator;
-import com.jingyong.validator.ValidatorBuilder;
-import com.jingyong.validator.format.Check;
-import com.jingyong.validator.format.CheckField;
-import com.jingyong.validator.format.Email;
-import com.jingyong.validator.format.Mobile;
-import com.jingyong.validator.format.base.Max;
-import com.jingyong.validator.format.base.Min;
-import com.jingyong.validator.format.base.NotBlank;
-import com.jingyong.validator.format.base.Pattern;
-import com.jingyong.validator.format.base.Size;
-import com.jingyong.validator.rule.IWarningProvider;
+import com.validator.Validator;
+import com.validator.ValidatorBuilder;
+import com.validator.format.Check;
+import com.validator.format.CheckField;
+import com.validator.format.Email;
+import com.validator.format.Mobile;
+import com.validator.format.base.Max;
+import com.validator.format.base.Min;
+import com.validator.format.base.NotBlank;
+import com.validator.format.base.Pattern;
+import com.validator.format.base.Size;
+import com.validator.rule.IWarningProvider;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,7 +33,7 @@ public class MainActivity extends AppCompatActivity {
     String mEmail;
 
     @NotBlank(warning = "这是空")
-    @CustomeAnn
+    @CustomeValidator
     TextView mEmailText;
 
     @Max(value = 10, warning = "超过了10")
@@ -68,7 +68,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Check
     @CheckField({"mTV", "mText", "mEmail", "mEmailText", "mPattern", "Value"})
-    public void test(@CustomeAnn String s,
+    public void test(@CustomeValidator String s,
                      @Min(value = 10, warning = "小于10") int i) {
 
     }
