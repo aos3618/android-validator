@@ -5,6 +5,9 @@ import com.jingyong.validator.checker.ParameterCheckerFactory;
 import com.jingyong.validator.format.CheckField;
 import com.jingyong.validator.format.Email;
 import com.jingyong.validator.format.Mobile;
+import com.jingyong.validator.format.base.Max;
+import com.jingyong.validator.format.base.Min;
+import com.jingyong.validator.format.base.NotBlank;
 import com.jingyong.validator.format.base.Pattern;
 import com.jingyong.validator.format.base.Size;
 
@@ -106,20 +109,40 @@ public class Validator {
                     Utils.Log("No field named : " + value + " for method :" + method.getName() + " of Class : " + clz.getCanonicalName());
                 } else {
                     Field field = classContent.getFields().get(value);
-                    Mobile mobile;
-                    Email email;
-                    Pattern pattern;
-                    if ((mobile = Utils.getMobile(field)) != null) {
-                        if (!FieldCheckerFactory.newMobileFieldChecker(field, mobile, object, prividerContent).check()) {
-                            return false;// Return false will block all next steps;
-                        }
-                    } else if ((email = Utils.getEmail(field)) != null) {
-                        if (!FieldCheckerFactory.newEmailFieldChecker(field, email, object, prividerContent).check()) {
-                            return false;// Return false will block all next steps;
-                        }
-                    } else if ((pattern = Utils.getPattern(field)) != null) {
-                        if (!FieldCheckerFactory.newPatternFieldChecker(field, pattern, object, prividerContent).check()) {
-                            return false;// Return false will block all next steps;
+
+                    for (Annotation ann : field.getDeclaredAnnotations()) {
+
+                        if ((Utils.isMobile(ann))) {
+                            Mobile mobile = (Mobile) ann;
+                            if (!FieldCheckerFactory.newMobileFieldChecker(field, mobile, object, prividerContent).check()) {
+                                return false;// Return false will block all next steps;
+                            }
+                        } else if (Utils.isPattern(ann)) {
+                            Pattern pattern = (Pattern) ann;
+                            if (!FieldCheckerFactory.newPatternFieldChecker(field, pattern, object, prividerContent).check()) {
+                                return false;// Return false will block all next steps;
+                            }
+                        } else if (Utils.isEmail(ann)) {
+                            Email email = (Email) ann;
+                            if (!FieldCheckerFactory.newEmailFieldChecker(field, email, object, prividerContent).check()) {
+                                return false;// Return false will block all next steps;
+                            }
+                        } else if (Utils.isNotBlank(annotation)) {
+                            NotBlank notBlank = (NotBlank) ann;
+                            if (!FieldCheckerFactory.newNotBlankFieldChecker(field, notBlank, object, prividerContent).check()) {
+                                return false;// Return false will block all next steps;
+                            }
+                        } else if (Utils.isSize(annotation)) {
+                            Size size = (Size) ann;
+                            if (!FieldCheckerFactory.newSizeFieldChecker(field, size, object, prividerContent).check()) {
+                                return false;// Return false will block all next steps;
+                            }
+                        } else if (Utils.isMax(annotation)) {
+                            Max size = (Max) ann;
+                            //TODO
+                        } else if (Utils.isMin(annotation)) {
+                            Min size = (Min) ann;
+                            //TODO
                         }
                     }
                 }
@@ -178,5 +201,4 @@ public class Validator {
 
         return true;
     }
-
 }

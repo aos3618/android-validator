@@ -13,7 +13,6 @@ import com.jingyong.validator.format.base.Pattern;
 import com.jingyong.validator.format.base.Size;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Field;
 
 //
 // Created by AoS on 2019/2/22.
@@ -44,16 +43,24 @@ public class Utils {
         return annotation instanceof CheckField;
     }
 
-    public static Mobile getMobile(Field field) {
-        return field.getAnnotation(Mobile.class);
+    public static boolean isMobile(Annotation annotation) {
+        return annotation instanceof Mobile;
     }
 
-    public static Email getEmail(Field field) {
-        return field.getAnnotation(Email.class);
+    public static boolean isEmail(Annotation annotation) {
+        return annotation instanceof Email;
     }
 
-    public static Pattern getPattern(Field field) {
-        return field.getAnnotation(Pattern.class);
+    public static boolean isNotBlank(Annotation annotation) {
+        return annotation instanceof NotBlank;
+    }
+
+    public static boolean isMax(Annotation annotation) {
+        return annotation instanceof Max;
+    }
+
+    public static boolean isMin(Annotation annotation) {
+        return annotation instanceof Min;
     }
 
     public static boolean isSize(Annotation annotation) {

@@ -3,6 +3,7 @@ package com.jingyong.validator.checker;
 import com.jingyong.validator.PrividerContent;
 import com.jingyong.validator.format.Email;
 import com.jingyong.validator.format.Mobile;
+import com.jingyong.validator.format.base.NotBlank;
 import com.jingyong.validator.format.base.Pattern;
 import com.jingyong.validator.format.base.Size;
 import com.jingyong.validator.rule.IRuleProvider;
@@ -31,6 +32,18 @@ public class FieldCheckerFactory {
     }
 
     public static IChecker newSizeFieldChecker(Field field, Size size, Object object, PrividerContent prividerContent) {
+        return new SizeFieldChecker(field, size, object, prividerContent);
+    }
+
+    public static IChecker newNotBlankFieldChecker(Field field, NotBlank notBlank, Object object, PrividerContent prividerContent) {
+        return new NotBlankFieldChecker(field, notBlank, object, prividerContent);
+    }
+
+    public static IChecker newMaxFieldChecker(Field field, Size size, Object object, PrividerContent prividerContent) {
+        return new SizeFieldChecker(field, size, object, prividerContent);
+    }
+
+    public static IChecker newMinFieldChecker(Field field, Size size, Object object, PrividerContent prividerContent) {
         return new SizeFieldChecker(field, size, object, prividerContent);
     }
 
@@ -156,6 +169,70 @@ public class FieldCheckerFactory {
             }
             return true;
         }
+    }
+
+    static class NotBlankFieldChecker implements IFieldChecker {
+        private Field field;
+        private NotBlank notBlank;
+        private Object object;
+        private PrividerContent prividerContent;
+
+        NotBlankFieldChecker(Field field, NotBlank notBlank, Object object, PrividerContent prividerContent) {
+            this.field = field;
+            this.notBlank = notBlank;
+            this.object = object;
+            this.prividerContent = prividerContent;
+        }
+
+        @Override
+        public boolean check() {
+
+            IRuleProvider rule = prividerContent.getRuleProvider();
+            IWarningProvider warningProvider = prividerContent.getWarningProvider();
+
+            if ((String.class).equals(field.getType())) {
+                if (!rule.isBlank(getStringValue(field, object))) {
+                    warningProvider.show(notBlank.warning());
+                    return false;
+                }
+            } else {
+                int size;
+                String value;
+                if (checkNull(field, object)) {
+                    warningProvider.show(notBlank.warning());
+                    return false;
+                } else if ((size = getCollectionSize(field, object)) != -1) {
+                    if (!rule.isBlank(size)) {
+                        warningProvider.show(notBlank.warning());
+                        return false;
+                    }
+                } else if ((value = getTextValue(field, object)) != null) {
+                    if (!rule.isBlank(value)) {
+                        warningProvider.show(notBlank.warning());
+                        return false;
+                    }
+                } else {
+                    return false;
+                }
+
+            }
+            return true;
+        }
+    }
+
+    private static boolean checkNull(Field field, Object object) {
+        return getObject(field, object) == null;
+    }
+
+    private static Object getObject(Field field, Object object) {
+        field.setAccessible(true);
+        try {
+            return field.get(object);
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
+
+        return null;
     }
 
     private static String getValue(Field field, Object object) {
