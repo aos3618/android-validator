@@ -98,10 +98,10 @@ public class MainActivity extends AppCompatActivity {
 ```
 
 # 自定义规则检查
-##提供自定义规则检查
-##具体步骤
+### 提供自定义规则检查
+### 具体步骤
 
-###1.自定义注解
+#### 1.自定义注解
 ```Java
 @Documented
 @Target({FIELD, PARAMETER})
@@ -112,7 +112,7 @@ public @interface CustomeValidator {
 }
 ```
 
-###2. 自定义检查规则
+#### 2. 自定义检查规则
 ```Java
 public class CustomRule implements IRuleValidator<CustomeValidator> {   //需要继承IRuleValidator，并使用步骤一中定义的注解
 
@@ -132,5 +132,5 @@ public class CustomRule implements IRuleValidator<CustomeValidator> {   //需要
 }
 ```
 
-###3.使用
+#### 3.使用
 与默认注解一致
