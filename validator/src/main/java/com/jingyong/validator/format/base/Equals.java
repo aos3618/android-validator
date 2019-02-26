@@ -12,10 +12,11 @@ import static java.lang.annotation.ElementType.FIELD;
 import static java.lang.annotation.ElementType.PARAMETER;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
+//TODO
 @Documented
 @Target({FIELD, PARAMETER})
 @Retention(RUNTIME)
-public @interface Pattern {
+public @interface Equals {
 
     String value();
 

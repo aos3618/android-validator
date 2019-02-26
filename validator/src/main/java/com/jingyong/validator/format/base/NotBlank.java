@@ -11,7 +11,6 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 //
 // Created by AoS on 2019/2/25.
 //
-//TODO implement
 @Documented
 @Target({FIELD, PARAMETER})
 @Retention(RUNTIME)

@@ -3,6 +3,8 @@ package com.jingyong.validator.checker;
 import com.jingyong.validator.PrividerContent;
 import com.jingyong.validator.format.Email;
 import com.jingyong.validator.format.Mobile;
+import com.jingyong.validator.format.base.Max;
+import com.jingyong.validator.format.base.Min;
 import com.jingyong.validator.format.base.NotBlank;
 import com.jingyong.validator.format.base.Pattern;
 import com.jingyong.validator.format.base.Size;
@@ -17,7 +19,6 @@ import java.lang.reflect.Method;
  */
 
 public class FieldCheckerFactory {
-
 
     public static IChecker newMobileFieldChecker(Field field, Mobile mobile, Object object, PrividerContent prividerContent) {
         return new MobileFieldChecker(field, mobile, object, prividerContent);
@@ -39,12 +40,12 @@ public class FieldCheckerFactory {
         return new NotBlankFieldChecker(field, notBlank, object, prividerContent);
     }
 
-    public static IChecker newMaxFieldChecker(Field field, Size size, Object object, PrividerContent prividerContent) {
-        return new SizeFieldChecker(field, size, object, prividerContent);
+    public static IChecker newMaxFieldChecker(Field field, Max max, Object object, PrividerContent prividerContent) {
+        return new MaxFieldChecker(field, max, object, prividerContent);
     }
 
-    public static IChecker newMinFieldChecker(Field field, Size size, Object object, PrividerContent prividerContent) {
-        return new SizeFieldChecker(field, size, object, prividerContent);
+    public static IChecker newMinFieldChecker(Field field, Min min, Object object, PrividerContent prividerContent) {
+        return new MinFieldChecker(field, min, object, prividerContent);
     }
 
     static class MobileFieldChecker implements IFieldChecker {
@@ -122,7 +123,6 @@ public class FieldCheckerFactory {
                 warningProvider.show(pattern.warning());
                 return false;
             }
-
             return true;
         }
     }
@@ -191,7 +191,7 @@ public class FieldCheckerFactory {
             IWarningProvider warningProvider = prividerContent.getWarningProvider();
 
             if ((String.class).equals(field.getType())) {
-                if (!rule.isBlank(getStringValue(field, object))) {
+                if (rule.isBlank(getStringValue(field, object))) {
                     warningProvider.show(notBlank.warning());
                     return false;
                 }
@@ -202,12 +202,12 @@ public class FieldCheckerFactory {
                     warningProvider.show(notBlank.warning());
                     return false;
                 } else if ((size = getCollectionSize(field, object)) != -1) {
-                    if (!rule.isBlank(size)) {
+                    if (rule.isBlank(size)) {
                         warningProvider.show(notBlank.warning());
                         return false;
                     }
                 } else if ((value = getTextValue(field, object)) != null) {
-                    if (!rule.isBlank(value)) {
+                    if (rule.isBlank(value)) {
                         warningProvider.show(notBlank.warning());
                         return false;
                     }
@@ -220,11 +220,89 @@ public class FieldCheckerFactory {
         }
     }
 
+    static class MaxFieldChecker implements IFieldChecker {
+
+        private Field field;
+        private Max max;
+        private Object object;
+        private PrividerContent prividerContent;
+
+        MaxFieldChecker(Field field, Max max, Object object, PrividerContent prividerContent) {
+            this.field = field;
+            this.max = max;
+            this.object = object;
+            this.prividerContent = prividerContent;
+        }
+
+        @Override
+        public boolean check() {
+            IRuleProvider rule = prividerContent.getRuleProvider();
+            IWarningProvider warningProvider = prividerContent.getWarningProvider();
+            Object obj = getObject(field, object);
+
+            if (obj == null) {
+                warningProvider.show(max.warning());
+                return false;
+            } else {
+                try {
+                    int v = (int) obj;
+                    if (rule.moreThan(v, max.value())) {
+                        warningProvider.show(max.warning());
+                        return false;
+                    }
+                } catch (Exception e) {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+    }
+
+    static class MinFieldChecker implements IFieldChecker {
+
+        private Field field;
+        private Min min;
+        private Object object;
+        private PrividerContent prividerContent;
+
+        MinFieldChecker(Field field, Min min, Object object, PrividerContent prividerContent) {
+            this.field = field;
+            this.min = min;
+            this.object = object;
+            this.prividerContent = prividerContent;
+        }
+
+        @Override
+        public boolean check() {
+            IRuleProvider rule = prividerContent.getRuleProvider();
+            IWarningProvider warningProvider = prividerContent.getWarningProvider();
+            Object obj = getObject(field, object);
+
+            if (obj == null) {
+                warningProvider.show(min.warning());
+                return false;
+            } else {
+                try {
+                    int v = (int) obj;
+                    if (rule.lessThan(v, min.value())) {
+                        warningProvider.show(min.warning());
+                        return false;
+                    }
+                } catch (Exception e) {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+    }
+
     private static boolean checkNull(Field field, Object object) {
         return getObject(field, object) == null;
     }
 
-    private static Object getObject(Field field, Object object) {
+    public static Object getObject(Field field, Object object) {
         field.setAccessible(true);
         try {
             return field.get(object);

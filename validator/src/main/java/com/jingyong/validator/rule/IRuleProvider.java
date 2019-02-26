@@ -1,7 +1,5 @@
 package com.jingyong.validator.rule;
 
-import java.util.Collection;
-
 /**
  * Created by AoS on 2019/2/22 0022.
  */
@@ -21,5 +19,9 @@ public interface IRuleProvider {
     boolean isBlank(String s);
 
     boolean isBlank(int size);
+
+    boolean lessThan(int value, int max);
+
+    boolean moreThan(int value, int min);
 
 }

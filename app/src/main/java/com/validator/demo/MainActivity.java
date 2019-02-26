@@ -11,6 +11,9 @@ import com.jingyong.validator.format.Check;
 import com.jingyong.validator.format.CheckField;
 import com.jingyong.validator.format.Email;
 import com.jingyong.validator.format.Mobile;
+import com.jingyong.validator.format.base.Max;
+import com.jingyong.validator.format.base.Min;
+import com.jingyong.validator.format.base.NotBlank;
 import com.jingyong.validator.format.base.Pattern;
 import com.jingyong.validator.format.base.Size;
 import com.jingyong.validator.rule.IWarningProvider;
@@ -29,17 +32,23 @@ public class MainActivity extends AppCompatActivity {
     @Email(warning = "邮箱格式不正确1")
     String mEmail;
 
-    @Email(warning = "邮箱格式不正确2")
+    @NotBlank(warning = "这是空")
+    @CustomeAnn
     TextView mEmailText;
+
+    @Max(value = 10, warning = "超过了10")
+    int Value = 20;
+
+
 
     @Pattern(value = "^[0-9]*$", warning = "正则格式不正确")
     String mPattern;
 
-    @Size(min = 1, max = 2, warning = "list大小不正确")
+    @Size(min = 0, max = 2, warning = "list大小不正确")
     List<String> mList = new ArrayList<>();
 
     @Override
-    protected void onCreate(@android.support.annotation.Size Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
@@ -48,21 +57,19 @@ public class MainActivity extends AppCompatActivity {
         Validator.inject(this);
 
         mEmailText = findViewById(R.id.tv_email);
+        mEmailText.setText("123");
         mTV = findViewById(R.id.tv_text);
         mTV.setText("13652020143");
 
         mEmail = "@";
         mPattern = "123";
-        test("11", mList);
+        test("11", 8);
     }
 
     @Check
-    @CheckField({"mTV", "mText", "mEmail", "mEmailText", "mPattern", "mList"})
-    public void test(@Size(min = 1, max = 2, warning = "s 格式不正确")
-                             String s,
-//                     @Pattern(value = "^[0-9]*$", warning = "mEmail 格式不正确")
-                     @Size(min = 1, max = 2, warning = "mList 格式不正确")
-                             List mList) {
+    @CheckField({"mTV", "mText", "mEmail", "mEmailText", "mPattern", "Value"})
+    public void test(@CustomeAnn String s,
+                     @Min(value = 10, warning = "小于10") int i) {
 
     }
 

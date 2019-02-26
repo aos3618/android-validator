@@ -10,6 +10,7 @@ import com.jingyong.validator.format.base.Min;
 import com.jingyong.validator.format.base.NotBlank;
 import com.jingyong.validator.format.base.Pattern;
 import com.jingyong.validator.format.base.Size;
+import com.jingyong.validator.rule.IRuleValidator;
 
 import org.aspectj.lang.reflect.MethodSignature;
 
@@ -127,22 +128,37 @@ public class Validator {
                             if (!FieldCheckerFactory.newEmailFieldChecker(field, email, object, prividerContent).check()) {
                                 return false;// Return false will block all next steps;
                             }
-                        } else if (Utils.isNotBlank(annotation)) {
+                        } else if (Utils.isNotBlank(ann)) {
                             NotBlank notBlank = (NotBlank) ann;
                             if (!FieldCheckerFactory.newNotBlankFieldChecker(field, notBlank, object, prividerContent).check()) {
                                 return false;// Return false will block all next steps;
                             }
-                        } else if (Utils.isSize(annotation)) {
+                        } else if (Utils.isSize(ann)) {
                             Size size = (Size) ann;
                             if (!FieldCheckerFactory.newSizeFieldChecker(field, size, object, prividerContent).check()) {
                                 return false;// Return false will block all next steps;
                             }
-                        } else if (Utils.isMax(annotation)) {
-                            Max size = (Max) ann;
-                            //TODO
-                        } else if (Utils.isMin(annotation)) {
-                            Min size = (Min) ann;
-                            //TODO
+                        } else if (Utils.isMax(ann)) {
+                            Max max = (Max) ann;
+                            if (!FieldCheckerFactory.newMaxFieldChecker(field, max, object, prividerContent).check()) {
+                                return false;
+                            }
+                        } else if (Utils.isMin(ann)) {
+                            Min min = (Min) ann;
+                            if (!FieldCheckerFactory.newMinFieldChecker(field, min, object, prividerContent).check()) {
+                                return false;
+                            }
+                        } else {
+                            Constraint constraint = ann.annotationType().getAnnotation(Constraint.class);
+                            if (constraint != null) {
+                                try {
+                                    if (!checkCustomValidator(ann, constraint, field, object)) {
+                                        return false;
+                                    }
+                                } catch (InstantiationException | IllegalAccessException e) {
+                                    throw new RuntimeException(e);
+                                }
+                            }
                         }
                     }
                 }
@@ -172,33 +188,83 @@ public class Validator {
         return true;
     }
 
-    private static boolean checkParameterAnnotation(Method method, Class type, String name, Object object, Annotation[] annotations) {
+    private static boolean checkParameterAnnotation(Method method, Class type, String name, Object value, Annotation[] annotations) {
         if (annotations == null) {
             return true;
         }
 
-        boolean nullValue = object == null;
-
         for (Annotation annotation : annotations) {
             if (Utils.isValidator(annotation)) {
-                if (nullValue) {
-                    return false;
-                }
 
                 if ((Utils.isSize(annotation))) {
                     Size size = (Size) annotation;
-                    if (!ParameterCheckerFactory.newSizeParameterChecker(type, name, object, size, prividerContent).check()) {
+                    if (!ParameterCheckerFactory.newSizeParameterChecker(type, name, value, size, prividerContent).check()) {
                         return false;// Return false will block all next steps;
                     }
                 } else if (Utils.isPattern(annotation)) {
                     Pattern pattern = (Pattern) annotation;
-                    if (!ParameterCheckerFactory.newPatternParameterChecker(type, name, object, pattern, prividerContent).check()) {
+                    if (!ParameterCheckerFactory.newPatternParameterChecker(type, name, value, pattern, prividerContent).check()) {
                         return false;// Return false will block all next steps;
+                    }
+                } else if (Utils.isMobile(annotation)) {
+                    Mobile mobile = (Mobile) annotation;
+                    if (!ParameterCheckerFactory.newMobileParameterChecker(type, name, value, mobile, prividerContent).check()) {
+                        return false;// Return false will block all next steps;
+                    }
+                } else if (Utils.isEmail(annotation)) {
+                    Email email = (Email) annotation;
+                    if (!ParameterCheckerFactory.newEmailFieldChecker(type, name, value, email, prividerContent).check()) {
+                        return false;// Return false will block all next steps;
+                    }
+                } else if (Utils.isNotBlank(annotation)) {
+                    NotBlank notBlank = (NotBlank) annotation;
+                    if (!ParameterCheckerFactory.newNotBlankFieldChecker(type, name, value, notBlank, prividerContent).check()) {
+                        return false;// Return false will block all next steps;
+                    }
+                } else if (Utils.isMax(annotation)) {
+                    Max max = (Max) annotation;
+                    if (!ParameterCheckerFactory.newMaxFieldChecker(type, name, value, max, prividerContent).check()) {
+                        return false;// Return false will block all next steps;
+                    }
+                } else if (Utils.isMin(annotation)) {
+                    Min min = (Min) annotation;
+                    if (!ParameterCheckerFactory.newMinFieldChecker(type, name, value, min, prividerContent).check()) {
+                        return false;// Return false will block all next steps;
+                    }
+                } else {
+                    Constraint constraint = annotation.annotationType().getAnnotation(Constraint.class);
+                    if (constraint != null) {
+                        try {
+                            if (!checkCustomValidator(annotation, constraint, value)) {
+                                return false;
+                            }
+                        } catch (InstantiationException | IllegalAccessException e) {
+                            throw new RuntimeException(e);
+                        }
                     }
                 }
             }
         }
 
+        return true;
+    }
+
+    private static boolean checkCustomValidator(Annotation annotation, Constraint constraint, Field field, Object clz) throws InstantiationException, IllegalAccessException {
+        return checkCustomValidator(annotation, constraint, FieldCheckerFactory.getObject(field, clz));
+    }
+
+    private static boolean checkCustomValidator(Annotation annotation, Constraint constraint, Object object) throws InstantiationException, IllegalAccessException {
+        try {
+            IRuleValidator iRuleValidator = (IRuleValidator) constraint.value().newInstance();
+            iRuleValidator.initialize(annotation, object);
+            if (!iRuleValidator.isValid()) {
+                iRuleValidator.showWarning();
+                return false;
+            }
+        } catch (ClassCastException e) {
+            throw new ClassCastException(annotation.annotationType()
+                    + "\n" + e.getMessage());
+        }
         return true;
     }
 }

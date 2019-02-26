@@ -36,7 +36,13 @@ public class Utils {
                 || annotation instanceof Mobile
                 || annotation instanceof Max
                 || annotation instanceof Min
-                || annotation instanceof NotBlank;
+                || annotation instanceof NotBlank
+                || isCustomValidator(annotation);
+    }
+
+    public static boolean isCustomValidator(Annotation annotation) {
+        Constraint constraint = annotation.annotationType().getAnnotation(Constraint.class);
+        return constraint != null;
     }
 
     public static boolean isCheckField(Annotation annotation) {

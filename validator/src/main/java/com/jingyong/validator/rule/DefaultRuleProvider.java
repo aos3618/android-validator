@@ -1,9 +1,5 @@
 package com.jingyong.validator.rule;
 
-import android.util.Log;
-
-import com.jingyong.validator.Utils;
-
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -35,6 +31,26 @@ public class DefaultRuleProvider implements IRuleProvider {
     @Override
     public boolean sizeIn(int min, int max, Integer integer) {
         return integer != null && integer > min && integer < max;
+    }
+
+    @Override
+    public boolean isBlank(String s) {
+        return s.isEmpty();
+    }
+
+    @Override
+    public boolean isBlank(int size) {
+        return size == 0;
+    }
+
+    @Override
+    public boolean lessThan(int value, int max) {
+        return value < max;
+    }
+
+    @Override
+    public boolean moreThan(int value, int min) {
+        return value > min;
     }
 
     private static boolean match(String str, String regex) {

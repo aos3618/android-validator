@@ -1,8 +1,10 @@
-package com.jingyong.validator.format.base;
+package com.validator.demo;
 
 //
-// Created by AoS on 2019/2/22.
+// Created by AoS on 2019/2/26.
 //
+
+import com.jingyong.validator.Constraint;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
@@ -15,9 +17,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Documented
 @Target({FIELD, PARAMETER})
 @Retention(RUNTIME)
-public @interface Pattern {
-
-    String value();
-
-    String warning() default "";
+@Constraint(CustomRule.class)
+public @interface CustomeAnn {
+    String value() default "CustomeAnn";
 }
