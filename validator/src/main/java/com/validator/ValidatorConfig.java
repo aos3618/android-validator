@@ -11,14 +11,18 @@ import com.validator.rule.IWarningProvider;
 //
 // Created by AoS on 2019/2/25.
 //
-public class ValidatorBuilder {
+public class ValidatorConfig {
 
     private Application application;
     private IRuleProvider ruleProvider;
     private IWarningProvider warningProvider;
     private Resources resources;
 
-    public ValidatorBuilder() {
+    public static ValidatorConfig newInstance() {
+        return new ValidatorConfig();
+    }
+
+    public ValidatorConfig() {
         ruleProvider = new DefaultRuleProvider();
         warningProvider = new DefaultWarningProvider();
     }
@@ -35,7 +39,7 @@ public class ValidatorBuilder {
         return warningProvider;
     }
 
-    public ValidatorBuilder setWarningProvider(IWarningProvider warningProvider) {
+    public ValidatorConfig setWarningProvider(IWarningProvider warningProvider) {
         this.warningProvider = warningProvider;
         return this;
     }
@@ -48,18 +52,14 @@ public class ValidatorBuilder {
         return ruleProvider;
     }
 
-    public ValidatorBuilder setApplication(Application application) {
+    public ValidatorConfig setApplication(Application application) {
         this.application = application;
         this.resources = application.getResources();
         return this;
     }
 
-    public ValidatorBuilder setRuleProvider(IRuleProvider ruleProvider) {
+    public ValidatorConfig setRuleProvider(IRuleProvider ruleProvider) {
         this.ruleProvider = ruleProvider;
         return this;
-    }
-
-    public Validator build() {
-        return new Validator(this);
     }
 }

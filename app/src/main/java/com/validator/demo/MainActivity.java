@@ -3,10 +3,8 @@ package com.validator.demo;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.validator.Validator;
-import com.validator.ValidatorBuilder;
 import com.validator.format.Check;
 import com.validator.format.CheckField;
 import com.validator.format.Email;
@@ -16,7 +14,6 @@ import com.validator.format.base.Min;
 import com.validator.format.base.NotBlank;
 import com.validator.format.base.Pattern;
 import com.validator.format.base.Size;
-import com.validator.rule.IWarningProvider;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,7 +24,7 @@ public class MainActivity extends AppCompatActivity {
     TextView mTV;
 
     @Mobile(warning = "手机号不正确2")
-    String mText = "15022729147";
+    String mText = "15022729132";
 
     @Email(warning = "邮箱格式不正确1")
     String mEmail;
@@ -52,14 +49,12 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        new ValidatorBuilder().setApplication(getApplication()).setWarningProvider(new WarningProvider()).build();
-
         Validator.inject(this);
 
         mEmailText = findViewById(R.id.tv_email);
         mEmailText.setText("123");
         mTV = findViewById(R.id.tv_text);
-        mTV.setText("13652020143");
+        mTV.setText("13651234143");
 
         mEmail = "@";
         mPattern = "123";
@@ -73,11 +68,4 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    class WarningProvider implements IWarningProvider {
-
-        @Override
-        public void show(String s) {
-            Toast.makeText(MainActivity.this, s, Toast.LENGTH_SHORT).show();
-        }
-    }
 }

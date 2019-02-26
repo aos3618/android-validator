@@ -28,7 +28,11 @@ public class Validator {
 
     private static PrividerContent prividerContent;
 
-    Validator(ValidatorBuilder builder) {
+    public static void init(ValidatorConfig builder) {
+        new Validator(builder);
+    }
+
+    Validator(ValidatorConfig builder) {
         prividerContent = new PrividerContent();
         prividerContent.setRuleProvider(builder.getRuleProvider());
         prividerContent.setWarningProvider(builder.getWarningProvider());
