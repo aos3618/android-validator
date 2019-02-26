@@ -2,8 +2,7 @@ package com.validator;
 
 import android.util.Log;
 
-import com.validator.format.Check;
-import com.validator.format.CheckField;
+import com.validator.format.Validate;
 import com.validator.format.Email;
 import com.validator.format.Mobile;
 import com.validator.format.base.Max;
@@ -26,7 +25,7 @@ public class Utils {
     }
 
     public static boolean isCheckMethod(Annotation annotation) {
-        return annotation instanceof Check;
+        return annotation instanceof Validate;
     }
 
     public static boolean isValidator(Annotation annotation) {
@@ -43,10 +42,6 @@ public class Utils {
     public static boolean isCustomValidator(Annotation annotation) {
         Constraint constraint = annotation.annotationType().getAnnotation(Constraint.class);
         return constraint != null;
-    }
-
-    public static boolean isCheckField(Annotation annotation) {
-        return annotation instanceof CheckField;
     }
 
     public static boolean isMobile(Annotation annotation) {

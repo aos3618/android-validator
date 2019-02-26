@@ -16,7 +16,7 @@ import org.aspectj.lang.reflect.MethodSignature;
 @Aspect
 public class MethodAspect {
 
-    private static final String CHECK = "execution(@com.validator.format.Check * *(..))";
+    private static final String CHECK = "execution(@com.validator.format.Validate * *(..))";
 
     @Around(CHECK)
     public void around(ProceedingJoinPoint joinPoint) throws Throwable {
@@ -27,7 +27,7 @@ public class MethodAspect {
                 joinPoint.proceed();
             }
         } else {
-            throw new RuntimeException("@Check Must use at a Method");
+            throw new RuntimeException("@Validate Must use at a Method");
         }
     }
 }

@@ -1,12 +1,11 @@
 package com.validator.demo;
 
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.widget.TextView;
 
 import com.validator.Validator;
-import com.validator.format.Check;
-import com.validator.format.CheckField;
+import com.validator.format.Validate;
 import com.validator.format.Email;
 import com.validator.format.Mobile;
 import com.validator.format.base.Max;
@@ -61,8 +60,7 @@ public class MainActivity extends AppCompatActivity {
         test("11", 8);
     }
 
-    @Check
-    @CheckField({"mTV", "mText", "mEmail", "mEmailText", "mPattern", "Value"})
+    @Validate({"mTV", "mText", "mEmail", "mEmailText", "mPattern", "Value"})
     public void test(@CustomeValidator String s,
                      @Min(value = 10, warning = "小于10") int i) {
 

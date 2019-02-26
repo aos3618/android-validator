@@ -13,8 +13,6 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Documented
 @Target(METHOD)
 @Retention(RUNTIME)
-public @interface Check {
-    String value() default "";
-
-    int type() default 0;
+public @interface Validate {
+    String[] value() default "";
 }

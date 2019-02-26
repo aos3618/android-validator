@@ -2,7 +2,7 @@ package com.validator;
 
 import com.validator.checker.FieldCheckerFactory;
 import com.validator.checker.ParameterCheckerFactory;
-import com.validator.format.CheckField;
+import com.validator.format.Validate;
 import com.validator.format.Email;
 import com.validator.format.Mobile;
 import com.validator.format.base.Max;
@@ -10,6 +10,8 @@ import com.validator.format.base.Min;
 import com.validator.format.base.NotBlank;
 import com.validator.format.base.Pattern;
 import com.validator.format.base.Size;
+import com.validator.rule.DefaultRuleProvider;
+import com.validator.rule.DefaultWarningProvider;
 import com.validator.rule.IRuleValidator;
 
 import org.aspectj.lang.reflect.MethodSignature;
@@ -26,17 +28,21 @@ public class Validator {
 
     private static HashMap<Class, ClassContent> sCheckCache = new HashMap<>();
 
-    private static PrividerContent prividerContent;
+    private static PrividerContent prividerContent = new PrividerContent();
 
-    public static void init(ValidatorConfig builder) {
-        new Validator(builder);
+    static {
+        prividerContent.setRuleProvider(new DefaultRuleProvider());
+        prividerContent.setWarningProvider(new DefaultWarningProvider());
     }
 
-    Validator(ValidatorConfig builder) {
-        prividerContent = new PrividerContent();
-        prividerContent.setRuleProvider(builder.getRuleProvider());
-        prividerContent.setWarningProvider(builder.getWarningProvider());
-        prividerContent.setResources(builder.getResources());
+    public static void init(ValidatorConfig config) {
+        new Validator(config);
+    }
+
+    private Validator(ValidatorConfig config) {
+        prividerContent.setRuleProvider(config.getRuleProvider());
+        prividerContent.setWarningProvider(config.getWarningProvider());
+        prividerContent.setResources(config.getResources());
     }
 
     public static void inject(Object object) {
@@ -84,7 +90,7 @@ public class Validator {
     public static boolean checkMethod(Object object, MethodSignature methodSignature, Object[] argsValues) {
 
         Method method = methodSignature.getMethod();
-        CheckField annotation = method.getAnnotation(CheckField.class);
+        Validate annotation = method.getAnnotation(Validate.class);
 
         boolean checkResult = true;
         if (annotation != null) {
@@ -96,14 +102,13 @@ public class Validator {
         return checkResult;
     }
 
-    private static boolean checkMethodAnnotation(Object object, Method method, Annotation annotations) {
+    private static boolean checkMethodAnnotation(Object object, Method method, Validate annotation) {
         Class clz = object.getClass();
         if (sCheckCache.get(clz) == null) {
             Utils.Log("Inject the class First");
             return false;
         }
         ClassContent classContent = sCheckCache.get(clz);
-        CheckField annotation = method.getAnnotation(CheckField.class);
         if (annotation != null) {
             String[] values = annotation.value();
 
