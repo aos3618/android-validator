@@ -3,21 +3,14 @@ package com.jingyong.validator;
 import android.util.Log;
 
 import com.jingyong.validator.format.Check;
-import com.jingyong.validator.format.field.CheckField;
-import com.jingyong.validator.format.field.EmailField;
-import com.jingyong.validator.format.field.MaxField;
-import com.jingyong.validator.format.field.MinField;
-import com.jingyong.validator.format.field.MobileField;
-import com.jingyong.validator.format.field.NotBlankField;
-import com.jingyong.validator.format.field.PatternField;
-import com.jingyong.validator.format.field.SizeField;
-import com.jingyong.validator.format.parameter.EmailParameter;
-import com.jingyong.validator.format.parameter.MaxParameter;
-import com.jingyong.validator.format.parameter.MinParameter;
-import com.jingyong.validator.format.parameter.MobileParameter;
-import com.jingyong.validator.format.parameter.NotBlankParameter;
-import com.jingyong.validator.format.parameter.PatternParameter;
-import com.jingyong.validator.format.parameter.SizeParameter;
+import com.jingyong.validator.format.CheckField;
+import com.jingyong.validator.format.Email;
+import com.jingyong.validator.format.Mobile;
+import com.jingyong.validator.format.base.Max;
+import com.jingyong.validator.format.base.Min;
+import com.jingyong.validator.format.base.NotBlank;
+import com.jingyong.validator.format.base.Pattern;
+import com.jingyong.validator.format.base.Size;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
@@ -33,52 +26,41 @@ public class Utils {
         Log.d(TAG, message);
     }
 
-    public static boolean isValidatorField(Annotation annotation) {
-        return annotation instanceof MobileField
-                || annotation instanceof EmailField
-                || annotation instanceof PatternField
-                || annotation instanceof SizeField
-                || annotation instanceof MaxField
-                || annotation instanceof MinField
-                || annotation instanceof NotBlankField;
-    }
-
     public static boolean isCheckMethod(Annotation annotation) {
         return annotation instanceof Check;
     }
 
-    public static boolean isValidatorParameter(Annotation annotation) {
-        return annotation instanceof SizeParameter
-                || annotation instanceof PatternParameter
-                || annotation instanceof EmailParameter
-                || annotation instanceof MobileParameter
-                || annotation instanceof MaxParameter
-                || annotation instanceof MinParameter
-                || annotation instanceof NotBlankParameter;
+    public static boolean isValidator(Annotation annotation) {
+        return annotation instanceof Size
+                || annotation instanceof Pattern
+                || annotation instanceof Email
+                || annotation instanceof Mobile
+                || annotation instanceof Max
+                || annotation instanceof Min
+                || annotation instanceof NotBlank;
     }
 
     public static boolean isCheckField(Annotation annotation) {
         return annotation instanceof CheckField;
     }
 
-    public static MobileField getMobileField(Field field) {
-        return field.getAnnotation(MobileField.class);
+    public static Mobile getMobile(Field field) {
+        return field.getAnnotation(Mobile.class);
     }
 
-    public static EmailField getEmailField(Field field) {
-        return field.getAnnotation(EmailField.class);
+    public static Email getEmail(Field field) {
+        return field.getAnnotation(Email.class);
     }
 
-    public static PatternField getPatternField(Field field) {
-        return field.getAnnotation(PatternField.class);
+    public static Pattern getPattern(Field field) {
+        return field.getAnnotation(Pattern.class);
     }
 
-
-    public static boolean isSizeParameter(Annotation annotation) {
-        return annotation instanceof SizeParameter;
+    public static boolean isSize(Annotation annotation) {
+        return annotation instanceof Size;
     }
 
-    public static boolean isPatternParameter(Annotation annotation) {
-        return annotation instanceof PatternParameter;
+    public static boolean isPattern(Annotation annotation) {
+        return annotation instanceof Pattern;
     }
 }

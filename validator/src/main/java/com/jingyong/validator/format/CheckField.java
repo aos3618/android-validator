@@ -1,4 +1,4 @@
-package com.jingyong.validator.format.field;
+package com.jingyong.validator.format;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;

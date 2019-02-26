@@ -1,18 +1,12 @@
 package com.jingyong.validator;
 
-import android.app.Application;
-import android.content.Context;
-import android.content.res.Resources;
-
-import com.jingyong.validator.checker.CheckerFactory;
-import com.jingyong.validator.format.field.CheckField;
-import com.jingyong.validator.format.field.EmailField;
-import com.jingyong.validator.format.field.MobileField;
-import com.jingyong.validator.format.field.PatternField;
-import com.jingyong.validator.format.parameter.PatternParameter;
-import com.jingyong.validator.format.parameter.SizeParameter;
-import com.jingyong.validator.rule.IRuleProvider;
-import com.jingyong.validator.rule.IWarningProvider;
+import com.jingyong.validator.checker.FieldCheckerFactory;
+import com.jingyong.validator.checker.ParameterCheckerFactory;
+import com.jingyong.validator.format.CheckField;
+import com.jingyong.validator.format.Email;
+import com.jingyong.validator.format.Mobile;
+import com.jingyong.validator.format.base.Pattern;
+import com.jingyong.validator.format.base.Size;
 
 import org.aspectj.lang.reflect.MethodSignature;
 
@@ -49,7 +43,7 @@ public class Validator {
 
             Annotation[] annotations = field.getDeclaredAnnotations();
             for (Annotation annotation : annotations) {
-                if (Utils.isValidatorField(annotation)) {
+                if (Utils.isValidator(annotation)) {
                     if (classContent == null) {
                         classContent = new ClassContent(clz);
                     }
@@ -112,19 +106,19 @@ public class Validator {
                     Utils.Log("No field named : " + value + " for method :" + method.getName() + " of Class : " + clz.getCanonicalName());
                 } else {
                     Field field = classContent.getFields().get(value);
-                    MobileField mobileField;
-                    EmailField emailField;
-                    PatternField patternField;
-                    if ((mobileField = Utils.getMobileField(field)) != null) {
-                        if (!CheckerFactory.getMobileFieldChecker(field, mobileField, object, prividerContent).check()) {
+                    Mobile mobile;
+                    Email email;
+                    Pattern pattern;
+                    if ((mobile = Utils.getMobile(field)) != null) {
+                        if (!FieldCheckerFactory.newMobileFieldChecker(field, mobile, object, prividerContent).check()) {
                             return false;// Return false will block all next steps;
                         }
-                    } else if ((emailField = Utils.getEmailField(field)) != null) {
-                        if (!CheckerFactory.getEmailFieldChecker(field, emailField, object, prividerContent).check()) {
+                    } else if ((email = Utils.getEmail(field)) != null) {
+                        if (!FieldCheckerFactory.newEmailFieldChecker(field, email, object, prividerContent).check()) {
                             return false;// Return false will block all next steps;
                         }
-                    } else if ((patternField = Utils.getPatternField(field)) != null) {
-                        if (!CheckerFactory.getPatternFieldChecker(field, patternField, object, prividerContent).check()) {
+                    } else if ((pattern = Utils.getPattern(field)) != null) {
+                        if (!FieldCheckerFactory.newPatternFieldChecker(field, pattern, object, prividerContent).check()) {
                             return false;// Return false will block all next steps;
                         }
                     }
@@ -163,19 +157,19 @@ public class Validator {
         boolean nullValue = object == null;
 
         for (Annotation annotation : annotations) {
-            if (Utils.isValidatorParameter(annotation)) {
+            if (Utils.isValidator(annotation)) {
                 if (nullValue) {
                     return false;
                 }
 
-                if ((Utils.isSizeParameter(annotation))) {
-                    SizeParameter sizeParameter = (SizeParameter) annotation;
-                    if (!CheckerFactory.getSizeParameterChecker(type, name, object, sizeParameter, prividerContent).check()) {
+                if ((Utils.isSize(annotation))) {
+                    Size size = (Size) annotation;
+                    if (!ParameterCheckerFactory.newSizeParameterChecker(type, name, object, size, prividerContent).check()) {
                         return false;// Return false will block all next steps;
                     }
-                } else if (Utils.isPatternParameter(annotation)) {
-                    PatternParameter patternParameter = (PatternParameter) annotation;
-                    if (!CheckerFactory.getPatternParameterChecker(type, name, object, patternParameter, prividerContent).check()) {
+                } else if (Utils.isPattern(annotation)) {
+                    Pattern pattern = (Pattern) annotation;
+                    if (!ParameterCheckerFactory.newPatternParameterChecker(type, name, object, pattern, prividerContent).check()) {
                         return false;// Return false will block all next steps;
                     }
                 }
