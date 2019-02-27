@@ -30,7 +30,7 @@ public class DefaultRuleProvider implements IRuleProvider {
 
     @Override
     public boolean sizeIn(int min, int max, Integer integer) {
-        return integer != null && integer > min && integer < max;
+        return integer != null && integer >= min && integer <= max;
     }
 
     @Override
