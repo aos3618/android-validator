@@ -1,16 +1,17 @@
 # android-validator
 [GOING] Android Common Validator using AspectJ , Annotation , Reflect
+
 [进行中] 基于AspectJ,注解，反射开发的Android校验库
 
 
-# Gradle 继承
+# Gradle 集成
 进行中
-# Maven继承
+# Maven 集成
 进行中
 
 # Function
 在某些方法调用时检查参数的合法性并进行提示
-目前提供的注解有：
+目前提供的注解有(持续加入中)：
 
 |注解|说明|支持类型
 |--|--|--|
@@ -98,9 +99,10 @@ public class MainActivity extends AppCompatActivity {
 ```
 
 # 自定义规则检查
-提供自定义规则检查
-具体步骤
-1.自定义注解
+### 提供自定义规则检查
+### 具体步骤
+
+#### 1.自定义注解
 ```Java
 @Documented
 @Target({FIELD, PARAMETER})
@@ -110,7 +112,8 @@ public @interface CustomeValidator {
     String value() default "CustomeValidator";
 }
 ```
-2. 自定义检查规则
+
+#### 2. 自定义检查规则
 ```Java
 public class CustomRule implements IRuleValidator<CustomeValidator> {   //需要继承IRuleValidator，并使用步骤一中定义的注解
 
@@ -129,5 +132,6 @@ public class CustomRule implements IRuleValidator<CustomeValidator> {   //需要
     }
 }
 ```
-3.使用
+
+#### 3.使用
 与默认注解一致
