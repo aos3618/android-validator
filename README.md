@@ -15,7 +15,8 @@
 
 |注解|说明|支持类型
 |--|--|--|
-|NotBlank |参数不可为空|String,Collection,以及有getText()/size()方法的任意类型
+|NotBlank |不可为空|String,Collection,以及有getText()/size()方法的任意类型
+|NotNull |不可为Null|任意类型
 |Pattern(regex) |是否是指定的正则表达式|String,以及有getText()方法的任意类型
 |Max(max) |是否<=max | int
 |Min(min) |是否>=min | int
