@@ -17,7 +17,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Documented
 @Target({FIELD, PARAMETER})
 @Retention(RUNTIME)
-@Constraint(CustomRule.class)
+@Constraint(CustomRule.class)   //Must have a Constraint Annotation，and define a check rule
 public @interface CustomeValidator {
     String value() default "CustomeValidator";
 }

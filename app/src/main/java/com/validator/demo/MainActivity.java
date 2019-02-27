@@ -20,25 +20,31 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
+    //validate if mTV is a mobile when @Validate method invoked
     @Mobile(warning = "wrong mobile number 1")
     TextView mTV;
 
     @Mobile(warning = "wrong mobile number 2")
     String mText = "15022729132";
 
+    //validate if mEmail is a email when @Validate method invoked
     @Email(warning = "wrong email 1")
     String mEmail;
 
+    //validate if mEmailText is not empty when @Validate method invoked
     @NotBlank(warning = "a empty field")
     @CustomeValidator
     TextView mEmailText;
 
+    //validate if mValue is less than 10 when @Validate method invoked
     @Max(value = 10, warning = "need less than 10")
     int mValue = 8;
 
+    //validate if mPattern matched the regex when @Validate method invoked
     @Pattern(value = "^[0-9]*$", warning = "not matched regex")
     String mPattern;
 
+    //validate if mList size is 0-2 when @Validate method invoked
     @Size(min = 0, max = 2, warning = "wrong list size")
     List<String> mList = new ArrayList<>();
 
@@ -55,7 +61,7 @@ public class MainActivity extends AppCompatActivity {
         mTV.setText("13651234143");
         mEmail = "@";
         mPattern = "123";
-        
+
         findViewById(R.id.tv_list).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -78,17 +84,23 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    //validate the field :mTV,mText;
+    //validate the parameter : s , i
     @Validate({"mTV", "mText"})
     public void validate1(@CustomeValidator String s,
                           @Min(value = 10, warning = "need more than 10") int i) {
 
     }
 
+    //validate the field :mEmail,mEmailText;
+    //validate the parameter : pattern
     @Validate({"mEmail", "mEmailText"})
     public void validate2(@Pattern(value = "^[0-9]*$", warning = "not matched regex") String pattern) {
 
     }
 
+    //validate the field :mPattern,mValue;
+    //validate the parameter : list
     @Validate({"mPattern", "mValue"})
     public void validate3(@Size(min = 1, max = 2, warning = "wrong list size") List list) {
 
