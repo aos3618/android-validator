@@ -44,6 +44,11 @@ public class DefaultRuleProvider implements IRuleProvider {
     }
 
     @Override
+    public boolean isNull(Object object) {
+        return object == null;
+    }
+
+    @Override
     public boolean lessThan(int value, int max) {
         return value < max;
     }

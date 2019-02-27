@@ -8,6 +8,7 @@ import com.validator.format.Mobile;
 import com.validator.format.base.Max;
 import com.validator.format.base.Min;
 import com.validator.format.base.NotBlank;
+import com.validator.format.base.NotNull;
 import com.validator.format.base.Pattern;
 import com.validator.format.base.Size;
 import com.validator.rule.DefaultRuleProvider;
@@ -155,6 +156,11 @@ public class Validator {
                             if (!FieldCheckerFactory.newMinFieldChecker(field, min, object, prividerContent).check()) {
                                 return false;
                             }
+                        } else if (Utils.isNotNull(ann)) {
+                            NotNull notNull = (NotNull) ann;
+                            if (!FieldCheckerFactory.newNotNullFieldChecker(field, notNull, object, prividerContent).check()) {
+                                return false;
+                            }
                         } else {
                             Constraint constraint = ann.annotationType().getAnnotation(Constraint.class);
                             if (constraint != null) {
@@ -236,6 +242,11 @@ public class Validator {
                 } else if (Utils.isMin(annotation)) {
                     Min min = (Min) annotation;
                     if (!ParameterCheckerFactory.newMinFieldChecker(type, name, value, min, prividerContent).check()) {
+                        return false;// Return false will block all next steps;
+                    }
+                } else if (Utils.isNotNull(annotation)) {
+                    NotNull notNull = (NotNull) annotation;
+                    if (!ParameterCheckerFactory.newNotNullFieldChecker(type, name, value, notNull, prividerContent).check()) {
                         return false;// Return false will block all next steps;
                     }
                 } else {

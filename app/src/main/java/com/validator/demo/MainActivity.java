@@ -12,6 +12,7 @@ import com.validator.format.Mobile;
 import com.validator.format.base.Max;
 import com.validator.format.base.Min;
 import com.validator.format.base.NotBlank;
+import com.validator.format.base.NotNull;
 import com.validator.format.base.Pattern;
 import com.validator.format.base.Size;
 
@@ -48,6 +49,9 @@ public class MainActivity extends AppCompatActivity {
     @Size(min = 0, max = 2, warning = "wrong list size")
     List<String> mList = new ArrayList<>();
 
+    @NotNull(warning = "should not null")
+    String mString;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -61,7 +65,7 @@ public class MainActivity extends AppCompatActivity {
         mTV.setText("13651234143");
         mEmail = "@";
         mPattern = "123";
-
+        mList.add("list");
         findViewById(R.id.tv_list).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -101,7 +105,7 @@ public class MainActivity extends AppCompatActivity {
 
     //validate the field :mPattern,mValue;
     //validate the parameter : list
-    @Validate({"mPattern", "mValue"})
+    @Validate({"mPattern", "mValue", "mString"})
     public void validate3(@Size(min = 1, max = 2, warning = "wrong list size") List list) {
 
     }

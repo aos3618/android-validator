@@ -8,6 +8,7 @@ import com.validator.format.Mobile;
 import com.validator.format.base.Max;
 import com.validator.format.base.Min;
 import com.validator.format.base.NotBlank;
+import com.validator.format.base.NotNull;
 import com.validator.format.base.Pattern;
 import com.validator.format.base.Size;
 
@@ -36,6 +37,7 @@ public class Utils {
                 || annotation instanceof Max
                 || annotation instanceof Min
                 || annotation instanceof NotBlank
+                || annotation instanceof NotNull
                 || isCustomValidator(annotation);
     }
 
@@ -54,6 +56,10 @@ public class Utils {
 
     public static boolean isNotBlank(Annotation annotation) {
         return annotation instanceof NotBlank;
+    }
+
+    public static boolean isNotNull(Annotation annotation) {
+        return annotation instanceof NotNull;
     }
 
     public static boolean isMax(Annotation annotation) {

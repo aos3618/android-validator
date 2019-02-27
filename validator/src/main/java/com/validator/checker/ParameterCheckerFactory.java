@@ -6,6 +6,7 @@ import com.validator.format.Mobile;
 import com.validator.format.base.Max;
 import com.validator.format.base.Min;
 import com.validator.format.base.NotBlank;
+import com.validator.format.base.NotNull;
 import com.validator.format.base.Pattern;
 import com.validator.format.base.Size;
 import com.validator.rule.IRuleProvider;
@@ -37,6 +38,10 @@ public class ParameterCheckerFactory {
 
     public static IChecker newNotBlankFieldChecker(Class type, String name, Object value, NotBlank notBlank, PrividerContent prividerContent) {
         return new NotBlankParameterChecker(type, name, value, notBlank, prividerContent);
+    }
+
+    public static IChecker newNotNullFieldChecker(Class type, String name, Object value, NotNull notnull, PrividerContent prividerContent) {
+        return new NotNullParameterChecker(type, name, value, notnull, prividerContent);
     }
 
     public static IChecker newMaxFieldChecker(Class type, String name, Object value, Max max, PrividerContent prividerContent) {
@@ -257,6 +262,34 @@ public class ParameterCheckerFactory {
                 return getCollectionSize(value) > 0;
             }
 
+            return true;
+        }
+    }
+
+    static class NotNullParameterChecker implements IParameterChecker {
+
+        private Class type;
+        private String name;
+        private Object value;
+        private NotNull notNull;
+        private PrividerContent prividerContent;
+
+        NotNullParameterChecker(Class type, String name, Object value, NotNull notNull, PrividerContent prividerContent) {
+            this.type = type;
+            this.name = name;
+            this.value = value;
+            this.notNull = notNull;
+            this.prividerContent = prividerContent;
+        }
+
+        @Override
+        public boolean check() {
+            IRuleProvider rule = prividerContent.getRuleProvider();
+            IWarningProvider warningProvider = prividerContent.getWarningProvider();
+            if (rule.isNull(value)) {
+                warningProvider.show(notNull.warning());
+                return false;
+            }
             return true;
         }
     }

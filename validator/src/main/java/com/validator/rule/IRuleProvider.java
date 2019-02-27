@@ -20,6 +20,8 @@ public interface IRuleProvider {
 
     boolean isBlank(int size);
 
+    boolean isNull(Object object);
+
     boolean lessThan(int value, int max);
 
     boolean moreThan(int value, int min);

@@ -6,6 +6,7 @@ import com.validator.format.Mobile;
 import com.validator.format.base.Max;
 import com.validator.format.base.Min;
 import com.validator.format.base.NotBlank;
+import com.validator.format.base.NotNull;
 import com.validator.format.base.Pattern;
 import com.validator.format.base.Size;
 import com.validator.rule.IRuleProvider;
@@ -38,6 +39,10 @@ public class FieldCheckerFactory {
 
     public static IChecker newNotBlankFieldChecker(Field field, NotBlank notBlank, Object object, PrividerContent prividerContent) {
         return new NotBlankFieldChecker(field, notBlank, object, prividerContent);
+    }
+
+    public static IChecker newNotNullFieldChecker(Field field, NotNull notNull, Object object, PrividerContent prividerContent) {
+        return new NotNullFieldChecker(field, notNull, object, prividerContent);
     }
 
     public static IChecker newMaxFieldChecker(Field field, Max max, Object object, PrividerContent prividerContent) {
@@ -216,6 +221,34 @@ public class FieldCheckerFactory {
                 }
 
             }
+            return true;
+        }
+    }
+
+    static class NotNullFieldChecker implements IFieldChecker {
+        private Field field;
+        private NotNull notNull;
+        private Object object;
+        private PrividerContent prividerContent;
+
+        NotNullFieldChecker(Field field, NotNull notNull, Object object, PrividerContent prividerContent) {
+            this.field = field;
+            this.notNull = notNull;
+            this.object = object;
+            this.prividerContent = prividerContent;
+        }
+
+        @Override
+        public boolean check() {
+
+            IRuleProvider rule = prividerContent.getRuleProvider();
+            IWarningProvider warningProvider = prividerContent.getWarningProvider();
+
+            if (rule.isNull(getObject(field, object))) {
+                warningProvider.show(notNull.warning());
+                return false;
+            }
+
             return true;
         }
     }
