@@ -35,11 +35,10 @@ public class DemoApplication extends Application {
                 ValidatorConfig
                         .newInstance()
                         .setApplication(this)
-                        .setWarningProvider(new WarningProvider())  //自定义warning显示方式，如不提供默认以Log输出，建议自定义。
-                        .setRuleProvider(new RuleProvider())        //自定义检查规则，如不提供默认使用默认检查方式，建议自定义。
+                        .setWarningProvider(new WarningProvider())  //custom how to show warning, default is Log
+                        .setRuleProvider(new RuleProvider())        //custom the check rule
         );
     }
-
 
     class WarningProvider implements IWarningProvider {
        ...
@@ -57,27 +56,32 @@ public class DemoApplication extends Application {
 ```Java
 public class MainActivity extends AppCompatActivity {
 
-    @Mobile(warning = "手机号不正确1")
+    //validate if mTV is a mobile when @Validate method invoked
+    @Mobile(warning = "wrong mobile number 1")
     TextView mTV;
 
-    @Mobile(warning = "手机号不正确2")
+    @Mobile(warning = "wrong mobile number 2")
     String mText = "15022729132";
 
-    @Email(warning = "邮箱格式不正确1")
+    //validate if mEmail is a email when @Validate method invoked
+    @Email(warning = "wrong email 1")
     String mEmail;
 
-    @NotBlank(warning = "这是空")
+    //validate if mEmailText is not empty when @Validate method invoked
+    @NotBlank(warning = "a empty field")
     @CustomeValidator
     TextView mEmailText;
 
-    @Max(value = 10, warning = "超过了10")
-    int Value = 20;
+    //validate if mValue is less than 10 when @Validate method invoked
+    @Max(value = 10, warning = "need less than 10")
+    int mValue = 8;
 
-
-    @Pattern(value = "^[0-9]*$", warning = "正则格式不正确")
+    //validate if mPattern matched the regex when @Validate method invoked
+    @Pattern(value = "^[0-9]*$", warning = "not matched regex")
     String mPattern;
 
-    @Size(min = 0, max = 2, warning = "list大小不正确")
+    //validate if mList size is 0-2 when @Validate method invoked
+    @Size(min = 0, max = 2, warning = "wrong list size")
     List<String> mList = new ArrayList<>();
 
     @Override
@@ -85,14 +89,56 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Validator.inject(this);    //初始化部分映射关系
-        
-        test(8);
+        Validator.inject(this);
+
+        mEmailText = findViewById(R.id.tv_email);
+        mEmailText.setText("123");
+        mTV = findViewById(R.id.tv_text);
+        mTV.setText("13651234143");
+        mEmail = "@";
+        mPattern = "123";
+
+        findViewById(R.id.tv_list).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                validate3(mList);
+            }
+        });
+
+        mTV.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                validate1("11", 8);
+            }
+        });
+
+        mEmailText.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                validate2("123");
+            }
+        });
     }
 
-    //将会检查这些成员变量的合法性，以及参数中带有已知注解的参数合法性
-    @Validate({"mTV", "mText", "mEmail", "mEmailText", "mPattern", "Value"})
-    public void test(@Min(value = 10, warning = "小于10") int i) {
+    //validate the field :mTV,mText;
+    //validate the parameter : s , i
+    @Validate({"mTV", "mText"})
+    public void validate1(@CustomeValidator String s,
+                          @Min(value = 10, warning = "need more than 10") int i) {
+
+    }
+
+    //validate the field :mEmail,mEmailText;
+    //validate the parameter : pattern
+    @Validate({"mEmail", "mEmailText"})
+    public void validate2(@Pattern(value = "^[0-9]*$", warning = "not matched regex") String pattern) {
+
+    }
+
+    //validate the field :mPattern,mValue;
+    //validate the parameter : list
+    @Validate({"mPattern", "mValue"})
+    public void validate3(@Size(min = 1, max = 2, warning = "wrong list size") List list) {
 
     }
 }
@@ -107,7 +153,7 @@ public class MainActivity extends AppCompatActivity {
 @Documented
 @Target({FIELD, PARAMETER})
 @Retention(RUNTIME)
-@Constraint(CustomRule.class)   //必须以Constraint 修饰自定义注解，并提供自定义检查规则类
+@Constraint(CustomRule.class)   //Must have a Constraint Annotation，and define a check rule
 public @interface CustomeValidator {
     String value() default "CustomeValidator";
 }
@@ -115,19 +161,19 @@ public @interface CustomeValidator {
 
 #### 2. 自定义检查规则
 ```Java
-public class CustomRule implements IRuleValidator<CustomeValidator> {   //需要继承IRuleValidator，并使用步骤一中定义的注解
+public class CustomRule implements IRuleValidator<CustomeValidator> {   //need implement IRuleValidator and step1 Annotation as generics
 
     @Override
-    public void initialize(CustomeValidator customeValidator, Object s) {  //初始化，自行实现
+    public void initialize(CustomeValidator customeValidator, Object s) {  //init
     }
 
     @Override
-    public boolean isValid() {   //具体检查自行实现
+    public boolean isValid() {   // how to valid the rule
         return true;
     }
 
     @Override
-    public void showWarning() {   //错误提示自行实现
+    public void showWarning() {   //how to show warning
 
     }
 }
