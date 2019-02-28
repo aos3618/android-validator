@@ -14,11 +14,11 @@ dependencies {
 }
 ```
 ### 2. add AspecJ dependenceies in the end of module build.gradle
-Android Library Module
+Android Application Module
 ```Java
 apply from: 'https://raw.githubusercontent.com/aos3618/android-validator/master/appconfig.gradle'
 ```
-Android Application Module
+Android Library Module
 ```Java
 apply from: 'https://raw.githubusercontent.com/aos3618/android-validator/master/libconfig.gradle'
 ```
