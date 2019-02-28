@@ -5,9 +5,24 @@
 
 
 # Gradle 集成
-进行中
-# Maven 集成
-进行中
+
+### 1. add dependencies in module build.gradle
+```Java
+dependencies {
+    ...
+    compile 'com.validator:validator-core:1.0.0@aar'
+}
+```
+### 2. add AspecJ dependenceies in the end of module build.gradle
+Android Library Module
+```Java
+apply from: 'https://raw.githubusercontent.com/aos3618/android-validator/master/appconfig.gradle'
+```
+Android Application Module
+```Java
+apply from: 'https://raw.githubusercontent.com/aos3618/android-validator/master/libconfig.gradle'
+```
+### 3. sync the project
 
 # Function
 在某些方法调用时检查参数的合法性并进行提示
