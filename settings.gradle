@@ -1,1 +1,1 @@
-include ':example', ':validator'
+include ':example', ':validator-core'
