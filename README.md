@@ -1,7 +1,7 @@
 # android-validator
-[GOING] Android Common Validator using AspectJ , Annotation , Reflect
+Android Common Validator using AspectJ , Annotation , Reflect. Support custom rule and validator
 
-[进行中] 基于AspectJ,注解，反射开发的Android校验库
+基于AspectJ,注解，反射开发的Android方法、参数校验库，支持自定义规则校验
 
 
 # Gradle 集成
@@ -197,6 +197,11 @@ public class CustomRule implements IRuleValidator<CustomeValidator> {   //need i
 
 #### 3.使用
 与默认注解一致
+
+# 参考
+
+* [Retrofit](https://github.com/square/retrofit)
+* [Hibernate Validator](https://github.com/hibernate/hibernate-validator)
 
 # License
 
