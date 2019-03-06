@@ -162,37 +162,43 @@ public class MainActivity extends AppCompatActivity {
 
 # 自定义规则检查
 ### 提供自定义规则检查
-### 具体步骤
+### 具体步骤  案例：登陆状态检查
 
-#### 1.自定义注解
+#### 1.自定义注解 
 ```Java
 @Documented
 @Target({FIELD, PARAMETER})
 @Retention(RUNTIME)
-@Constraint(CustomRule.class)   //Must have a Constraint Annotation，and define a check rule
-public @interface CustomeValidator {
-    String value() default "CustomeValidator";
+@Constraint(LoginRule.class)   //Must have a Constraint Annotation，and define a check rule
+public @interface LoginValiadtor {
+    String value() default "LoginValidator";
 }
 ```
 
 #### 2. 自定义检查规则
 ```Java
-public class CustomRule implements IRuleValidator<CustomeValidator> {   //need implement IRuleValidator and step1 Annotation as generics
+public class LoginRule implements IRuleValidator<LoginValiadtor> {  //need implement IRuleValidator and step1 Annotation as generics
+    UserInfo userInfo;
 
     @Override
-    public void initialize(CustomeValidator customeValidator, Object s) {  //init
+    public void initialize(LoginValiadtor loginValiadtor, Object t) {
+        if (t instanceof UserInfo) {
+            userInfo = (UserInfo) t;
+        }
     }
 
     @Override
-    public boolean isValid() {   // how to valid the rule
-        return true;
+    public boolean isValid() {
+        return userInfo != null && userInfo.isLogin();    //check the login status
     }
 
     @Override
-    public void showWarning() {   //how to show warning
-
+    public void showWarning() {
+//        Toast.makeText(context, "请登录", Toast.LENGTH_SHORT);
+        Log.d("TAG", "请登录");
     }
 }
+
 ```
 
 #### 3.使用
