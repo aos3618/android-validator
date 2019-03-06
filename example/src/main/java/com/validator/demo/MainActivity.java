@@ -52,6 +52,9 @@ public class MainActivity extends AppCompatActivity {
     @NotNull(warning = "should not null")
     String mString;
 
+    @LoginValiadtor
+    UserInfo userInfo = new UserInfo();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -86,6 +89,8 @@ public class MainActivity extends AppCompatActivity {
                 validate2("123");
             }
         });
+
+        checkLogin(userInfo);
     }
 
     //validate the field :mTV,mText;
@@ -107,6 +112,11 @@ public class MainActivity extends AppCompatActivity {
     //validate the parameter : list
     @Validate({"mPattern", "mValue", "mString"})
     public void validate3(@Size(min = 1, max = 2, warning = "wrong list size") List list) {
+
+    }
+
+    @Validate
+    public void checkLogin(@LoginValiadtor UserInfo userInfo) {
 
     }
 }
