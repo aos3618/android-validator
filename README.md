@@ -97,7 +97,8 @@ public class MainActivity extends AppCompatActivity {
     String mPattern;
 
     //validate if mList size is 0-2 when @Validate method invoked
-    @Size(min = 0, max = 2, warning = "wrong list size")
+    //use warningId can show a res warning
+    @Size(min = 0, max = 2, warningId = R.string.waring)
     List<String> mList = new ArrayList<>();
 
     @Override
