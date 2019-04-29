@@ -21,4 +21,6 @@ public @interface Max {
     int value();
 
     String warning() default "";
+
+    int warningId() default 0;
 }

@@ -1,5 +1,7 @@
 package com.validator.checker;
 
+import android.content.res.Resources;
+
 import com.validator.PrividerContent;
 import com.validator.format.Email;
 import com.validator.format.Mobile;
@@ -10,7 +12,6 @@ import com.validator.format.base.NotNull;
 import com.validator.format.base.Pattern;
 import com.validator.format.base.Size;
 import com.validator.rule.IRuleProvider;
-import com.validator.rule.IWarningProvider;
 
 import java.lang.reflect.Method;
 import java.util.Collection;
@@ -71,19 +72,18 @@ public class ParameterCheckerFactory {
         @Override
         public boolean check() {
             IRuleProvider rule = prividerContent.getRuleProvider();
-            IWarningProvider warningProvider = prividerContent.getWarningProvider();
             if (checkNull(value)) {
-                warningProvider.show(mobile.warning());
+                showWarning(prividerContent, mobile.warningId(), mobile.warning());
                 return false;
             }
             if (value instanceof String) {
                 if (!rule.isMobile(String.valueOf(value))) {
-                    warningProvider.show(mobile.warning());
+                    showWarning(prividerContent, mobile.warningId(), mobile.warning());
                     return false;
                 }
 
             } else if (!rule.isMobile(getTextValue(value))) {
-                warningProvider.show(mobile.warning());
+                showWarning(prividerContent, mobile.warningId(), mobile.warning());
                 return false;
             } else {
                 return false;
@@ -112,19 +112,18 @@ public class ParameterCheckerFactory {
         @Override
         public boolean check() {
             IRuleProvider rule = prividerContent.getRuleProvider();
-            IWarningProvider warningProvider = prividerContent.getWarningProvider();
             if (checkNull(value)) {
-                warningProvider.show(email.warning());
+                showWarning(prividerContent, email.warningId(), email.warning());
                 return false;
             }
             if (value instanceof String) {
                 if (!rule.isEmail(String.valueOf(value))) {
-                    warningProvider.show(email.warning());
+                    showWarning(prividerContent, email.warningId(), email.warning());
                     return false;
                 }
 
             } else if (!rule.isEmail(getTextValue(value))) {
-                warningProvider.show(email.warning());
+                showWarning(prividerContent, email.warningId(), email.warning());
                 return false;
             } else {
                 return false;
@@ -153,24 +152,23 @@ public class ParameterCheckerFactory {
         @Override
         public boolean check() {
             IRuleProvider rule = prividerContent.getRuleProvider();
-            IWarningProvider warningProvider = prividerContent.getWarningProvider();
             if (checkNull(value)) {
-                warningProvider.show(size.warning());
+                showWarning(prividerContent, size.warningId(), size.warning());
                 return false;
             }
             if (value instanceof String) {
                 if (!rule.sizeIn(size.min(), size.max(), String.valueOf(value))) {
-                    warningProvider.show(size.warning());
+                    showWarning(prividerContent, size.warningId(), size.warning());
                     return false;
                 }
 
             } else if (value instanceof Collection) {
                 if (!rule.sizeIn(size.min(), size.max(), getCollectionSize((Collection) value))) {
-                    warningProvider.show(size.warning());
+                    showWarning(prividerContent, size.warningId(), size.warning());
                     return false;
                 }
             } else if (!rule.sizeIn(size.min(), size.max(), getTextValue(value))) {
-                warningProvider.show(size.warning());
+                showWarning(prividerContent, size.warningId(), size.warning());
                 return false;
             } else {
                 return getCollectionSize(value) > 0;
@@ -199,20 +197,19 @@ public class ParameterCheckerFactory {
         @Override
         public boolean check() {
             IRuleProvider rule = prividerContent.getRuleProvider();
-            IWarningProvider warningProvider = prividerContent.getWarningProvider();
             if (checkNull(value)) {
-                warningProvider.show(pattern.warning());
+                showWarning(prividerContent, pattern.warningId(), pattern.warning());
                 return false;
             }
             if (value instanceof String) {
                 if (!rule.isPattern(String.valueOf(value), pattern.value())) {
-                    warningProvider.show(pattern.warning());
+                    showWarning(prividerContent, pattern.warningId(), pattern.warning());
                     return false;
                 }
 
             } else {
                 if (!rule.isPattern(getTextValue(value), pattern.value())) {
-                    warningProvider.show(pattern.warning());
+                    showWarning(prividerContent, pattern.warningId(), pattern.warning());
                     return false;
                 }
             }
@@ -239,24 +236,23 @@ public class ParameterCheckerFactory {
         @Override
         public boolean check() {
             IRuleProvider rule = prividerContent.getRuleProvider();
-            IWarningProvider warningProvider = prividerContent.getWarningProvider();
             if (checkNull(value)) {
-                warningProvider.show(notBlank.warning());
+                showWarning(prividerContent, notBlank.warningId(), notBlank.warning());
                 return false;
             }
             if (value instanceof String) {
                 if (rule.isBlank(String.valueOf(value))) {
-                    warningProvider.show(notBlank.warning());
+                    showWarning(prividerContent, notBlank.warningId(), notBlank.warning());
                     return false;
                 }
 
             } else if (value instanceof Collection) {
                 if (rule.isBlank(getCollectionSize((Collection) value))) {
-                    warningProvider.show(notBlank.warning());
+                    showWarning(prividerContent, notBlank.warningId(), notBlank.warning());
                     return false;
                 }
             } else if (rule.isBlank(getTextValue(value))) {
-                warningProvider.show(notBlank.warning());
+                showWarning(prividerContent, notBlank.warningId(), notBlank.warning());
                 return false;
             } else {
                 return getCollectionSize(value) > 0;
@@ -285,9 +281,8 @@ public class ParameterCheckerFactory {
         @Override
         public boolean check() {
             IRuleProvider rule = prividerContent.getRuleProvider();
-            IWarningProvider warningProvider = prividerContent.getWarningProvider();
             if (rule.isNull(value)) {
-                warningProvider.show(notNull.warning());
+                showWarning(prividerContent, notNull.warningId(), notNull.warning());
                 return false;
             }
             return true;
@@ -313,15 +308,14 @@ public class ParameterCheckerFactory {
         @Override
         public boolean check() {
             IRuleProvider rule = prividerContent.getRuleProvider();
-            IWarningProvider warningProvider = prividerContent.getWarningProvider();
             if (checkNull(value)) {
-                warningProvider.show(max.warning());
+                showWarning(prividerContent, max.warningId(), max.warning());
                 return false;
             }
             try {
                 int v = (int) value;
                 if (rule.moreThan(v, max.value())) {
-                    warningProvider.show(max.warning());
+                    showWarning(prividerContent, max.warningId(), max.warning());
                     return false;
                 }
             } catch (Exception e) {
@@ -350,15 +344,14 @@ public class ParameterCheckerFactory {
         @Override
         public boolean check() {
             IRuleProvider rule = prividerContent.getRuleProvider();
-            IWarningProvider warningProvider = prividerContent.getWarningProvider();
             if (checkNull(value)) {
-                warningProvider.show(min.warning());
+                showWarning(prividerContent, min.warningId(), min.warning());
                 return false;
             }
             try {
                 int v = (int) value;
                 if (rule.lessThan(v, min.value())) {
-                    warningProvider.show(min.warning());
+                    showWarning(prividerContent, min.warningId(), min.warning());
                     return false;
                 }
             } catch (Exception e) {
@@ -398,5 +391,16 @@ public class ParameterCheckerFactory {
 
     private static int getCollectionSize(Collection value) {
         return value.size();
+    }
+
+    private static void showWarning(PrividerContent prividerContent, int id, String str) {
+        if (0 != id) {
+            if (null != prividerContent.getResources()) {
+                Resources resources = prividerContent.getResources();
+                prividerContent.getWarningProvider().show(resources.getString(id));
+            }
+        } else {
+            prividerContent.getWarningProvider().show(str);
+        }
     }
 }

@@ -21,4 +21,7 @@ public @interface Equals {
     String value();
 
     String warning() default "";
+
+    int warningId() default 0;
+
 }

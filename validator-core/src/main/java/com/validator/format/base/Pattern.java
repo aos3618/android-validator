@@ -20,4 +20,6 @@ public @interface Pattern {
     String value();
 
     String warning() default "";
+
+    int warningId() default 0;
 }

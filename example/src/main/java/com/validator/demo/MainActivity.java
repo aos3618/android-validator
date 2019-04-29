@@ -6,9 +6,9 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.validator.Validator;
-import com.validator.format.Validate;
 import com.validator.format.Email;
 import com.validator.format.Mobile;
+import com.validator.format.Validate;
 import com.validator.format.base.Max;
 import com.validator.format.base.Min;
 import com.validator.format.base.NotBlank;
@@ -38,12 +38,12 @@ public class MainActivity extends AppCompatActivity {
     TextView mEmailText;
 
     //validate if mValue is less than 10 when @Validate method invoked
-    @Max(value = 10, warning = "need less than 10")
+    @Max(value = 10, warningId = R.id.tv_list)
     int mValue = 8;
 
     //validate if mPattern matched the regex when @Validate method invoked
-    @Pattern(value = "^[0-9]*$", warning = "not matched regex")
-    String mPattern;
+//    @Pattern(value = "^[0-9]*$", warning = "not matched regex")
+//    String mPattern;
 
     //validate if mList size is 0-2 when @Validate method invoked
     @Size(min = 0, max = 2, warning = "wrong list size")
@@ -67,7 +67,6 @@ public class MainActivity extends AppCompatActivity {
         mTV = findViewById(R.id.tv_text);
         mTV.setText("13651234143");
         mEmail = "@";
-        mPattern = "123";
         mList.add("list");
         findViewById(R.id.tv_list).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -97,7 +96,7 @@ public class MainActivity extends AppCompatActivity {
     //validate the parameter : s , i
     @Validate({"mTV", "mText"})
     public void validate1(@CustomeValidator String s,
-                          @Min(value = 10, warning = "need more than 10") int i) {
+                          @Min(value = 10, warningId = R.string.app_name) int i) {
 
     }
 

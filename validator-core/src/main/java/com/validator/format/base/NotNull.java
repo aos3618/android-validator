@@ -17,4 +17,6 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Retention(RUNTIME)
 public @interface NotNull {
     String warning() default "";
+
+    int warningId() default 0;
 }

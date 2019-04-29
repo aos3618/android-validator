@@ -21,4 +21,6 @@ public @interface Size {
     int max();
 
     String warning() default "";
+
+    int warningId() default 0;
 }

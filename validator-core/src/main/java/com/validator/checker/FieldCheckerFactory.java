@@ -1,5 +1,7 @@
 package com.validator.checker;
 
+import android.content.res.Resources;
+
 import com.validator.PrividerContent;
 import com.validator.format.Email;
 import com.validator.format.Mobile;
@@ -10,7 +12,6 @@ import com.validator.format.base.NotNull;
 import com.validator.format.base.Pattern;
 import com.validator.format.base.Size;
 import com.validator.rule.IRuleProvider;
-import com.validator.rule.IWarningProvider;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -70,9 +71,8 @@ public class FieldCheckerFactory {
         @Override
         public boolean check() {
             IRuleProvider rule = prividerContent.getRuleProvider();
-            IWarningProvider warningProvider = prividerContent.getWarningProvider();
             if (!rule.isMobile(getValue(field, object))) {
-                warningProvider.show(mobile.warning());
+                showWarning(prividerContent, mobile.warningId(), mobile.warning());
                 return false;
             }
 
@@ -97,9 +97,8 @@ public class FieldCheckerFactory {
         @Override
         public boolean check() {
             IRuleProvider rule = prividerContent.getRuleProvider();
-            IWarningProvider warningProvider = prividerContent.getWarningProvider();
             if (!rule.isEmail(getValue(field, object))) {
-                warningProvider.show(email.warning());
+                showWarning(prividerContent, email.warningId(), email.warning());
                 return false;
             }
             return true;
@@ -123,9 +122,8 @@ public class FieldCheckerFactory {
         @Override
         public boolean check() {
             IRuleProvider rule = prividerContent.getRuleProvider();
-            IWarningProvider warningProvider = prividerContent.getWarningProvider();
             if (!rule.isPattern(getValue(field, object), pattern.value())) {
-                warningProvider.show(pattern.warning());
+                showWarning(prividerContent, pattern.warningId(), pattern.warning());
                 return false;
             }
             return true;
@@ -148,10 +146,9 @@ public class FieldCheckerFactory {
         @Override
         public boolean check() {
             IRuleProvider rule = prividerContent.getRuleProvider();
-            IWarningProvider warningProvider = prividerContent.getWarningProvider();
             if ((String.class).equals(field.getType())) {
                 if (!rule.sizeIn(size.min(), size.max(), getStringValue(field, object))) {
-                    warningProvider.show(size.warning());
+                    showWarning(prividerContent, this.size.warningId(), this.size.warning());
                     return false;
                 }
             } else {
@@ -159,12 +156,12 @@ public class FieldCheckerFactory {
                 String value;
                 if ((size = getCollectionSize(field, object)) != -1) {
                     if (!rule.sizeIn(this.size.min(), this.size.max(), size)) {
-                        warningProvider.show(this.size.warning());
+                        showWarning(prividerContent, this.size.warningId(), this.size.warning());
                         return false;
                     }
                 } else if ((value = getTextValue(field, object)) != null) {
                     if (!rule.sizeIn(this.size.min(), this.size.max(), value)) {
-                        warningProvider.show(this.size.warning());
+                        showWarning(prividerContent, this.size.warningId(), this.size.warning());
                         return false;
                     }
                 } else {
@@ -193,27 +190,26 @@ public class FieldCheckerFactory {
         public boolean check() {
 
             IRuleProvider rule = prividerContent.getRuleProvider();
-            IWarningProvider warningProvider = prividerContent.getWarningProvider();
 
             if ((String.class).equals(field.getType())) {
                 if (rule.isBlank(getStringValue(field, object))) {
-                    warningProvider.show(notBlank.warning());
+                    showWarning(prividerContent, notBlank.warningId(), notBlank.warning());
                     return false;
                 }
             } else {
                 int size;
                 String value;
                 if (checkNull(field, object)) {
-                    warningProvider.show(notBlank.warning());
+                    showWarning(prividerContent, notBlank.warningId(), notBlank.warning());
                     return false;
                 } else if ((size = getCollectionSize(field, object)) != -1) {
                     if (rule.isBlank(size)) {
-                        warningProvider.show(notBlank.warning());
+                        showWarning(prividerContent, notBlank.warningId(), notBlank.warning());
                         return false;
                     }
                 } else if ((value = getTextValue(field, object)) != null) {
                     if (rule.isBlank(value)) {
-                        warningProvider.show(notBlank.warning());
+                        showWarning(prividerContent, notBlank.warningId(), notBlank.warning());
                         return false;
                     }
                 } else {
@@ -242,10 +238,9 @@ public class FieldCheckerFactory {
         public boolean check() {
 
             IRuleProvider rule = prividerContent.getRuleProvider();
-            IWarningProvider warningProvider = prividerContent.getWarningProvider();
 
             if (rule.isNull(getObject(field, object))) {
-                warningProvider.show(notNull.warning());
+                showWarning(prividerContent, notNull.warningId(), notNull.warning());
                 return false;
             }
 
@@ -270,17 +265,16 @@ public class FieldCheckerFactory {
         @Override
         public boolean check() {
             IRuleProvider rule = prividerContent.getRuleProvider();
-            IWarningProvider warningProvider = prividerContent.getWarningProvider();
             Object obj = getObject(field, object);
 
             if (obj == null) {
-                warningProvider.show(max.warning());
+                showWarning(prividerContent, max.warningId(), max.warning());
                 return false;
             } else {
                 try {
                     int v = (int) obj;
                     if (rule.moreThan(v, max.value())) {
-                        warningProvider.show(max.warning());
+                        showWarning(prividerContent, max.warningId(), max.warning());
                         return false;
                     }
                 } catch (Exception e) {
@@ -309,17 +303,16 @@ public class FieldCheckerFactory {
         @Override
         public boolean check() {
             IRuleProvider rule = prividerContent.getRuleProvider();
-            IWarningProvider warningProvider = prividerContent.getWarningProvider();
             Object obj = getObject(field, object);
 
             if (obj == null) {
-                warningProvider.show(min.warning());
+                showWarning(prividerContent, min.warningId(), min.warning());
                 return false;
             } else {
                 try {
                     int v = (int) obj;
                     if (rule.lessThan(v, min.value())) {
-                        warningProvider.show(min.warning());
+                        showWarning(prividerContent, min.warningId(), min.warning());
                         return false;
                     }
                 } catch (Exception e) {
@@ -392,5 +385,16 @@ public class FieldCheckerFactory {
             e.printStackTrace();
         }
         return -1;
+    }
+
+    private static void showWarning(PrividerContent prividerContent, int id, String str) {
+        if (0 != id) {
+            if (null != prividerContent.getResources()) {
+                Resources resources = prividerContent.getResources();
+                prividerContent.getWarningProvider().show(resources.getString(id));
+            }
+        } else {
+            prividerContent.getWarningProvider().show(str);
+        }
     }
 }
