@@ -10,7 +10,7 @@ Android Common Validator using AspectJ , Annotation , Reflect. Support custom ru
 ```Java
 dependencies {
     ...
-    compile 'com.validator:validator-core:1.0.0@aar'
+    compile 'com.validator:validator-core:1.0.1@aar' // 1.0.1 support res warning
 }
 ```
 ### 2. add AspecJ dependenceies in the end of module build.gradle
